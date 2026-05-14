@@ -9,7 +9,8 @@ description: "Ask Wire API endpoints"
 
 ## Authentication
 
-All API endpoints are authenticated using Bearer tokens and picked up from the specification file.
+All API endpoints are authenticated using Bearer tokens that refresh every 24 hours. To obtain a token, send a POST request to the following endpoint:
+`https://zeus.ask-wire.com/auth/otp/login` with the following body:
 
 <RequestExample>
 
