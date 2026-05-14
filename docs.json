@@ -34,7 +34,7 @@
   },
   "logo": {
     "light": "/logo/awlogo.webp",
-    "dark": "/logo/awlogo.webp"
+    "dark": "/logo/awlogowhite.svg"
   },
   "navbar": {
     "links": [],
