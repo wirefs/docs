@@ -19,7 +19,7 @@
           },
           {
             "group": "Endpoint examples",
-            "pages": ["api-reference/endpoint/get"],
+            "pages": ["api-reference/endpoint/get-properties"],
             "expanded": true
           }
         ]
