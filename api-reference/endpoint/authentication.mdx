@@ -1,0 +1,32 @@
+---
+title: "Authentication"
+description: "Authenticate a user using username and password."
+openapi: "../../openapi.json POST /auth/otp/login"
+---
+
+## Description
+
+Authenticate a user using username and password.
+
+This endpoint is served from the **authentication service**, separate from the main API.
+
+---
+
+## Request
+
+### Body (multipart/form-data)
+
+| Field    | Type   | Required | Description            |
+| -------- | ------ | -------- | ---------------------- |
+| username | string | yes      | User username or email |
+| password | string | yes      | User password          |
+
+---
+
+## Example Request
+
+```bash id="auth_curl"
+curl --location 'https://zeus.ask-wire.com/auth/otp/login' \
+--form 'username="user@example.com"' \
+--form 'password="your_password"'
+```

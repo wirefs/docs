@@ -7,7 +7,12 @@
   },
   "servers": [
     {
-      "url": "https://pandora.ask-wire.com"
+      "url": "https://pandora.ask-wire.com",
+      "description": "Main API (Properties)"
+    },
+    {
+      "url": "https://zeus.ask-wire.com",
+      "description": "Auth API"
     }
   ],
   "security": [
@@ -353,6 +358,43 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "/auth/otp/login": {
+      "post": {
+        "summary": "Login",
+        "security": [],
+        "servers": [
+          {
+            "url": "https://zeus.ask-wire.com"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": ["username", "password"],
+                "properties": {
+                  "username": {
+                    "type": "string",
+                    "example": "user@example.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "your_password"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
           }
         }
       }
