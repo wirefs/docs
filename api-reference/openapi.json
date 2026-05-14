@@ -1,12 +1,9 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "OpenAPI Plant Store",
-    "description": "A sample API that uses a plant store as an example to demonstrate features in the OpenAPI specification",
-    "license": {
-      "name": "MIT"
-    },
-    "version": "1.0.0"
+    "title": "Properties API",
+    "version": "1.0.0",
+    "description": "Public properties and foreclosure listings API"
   },
   "servers": [
     {
@@ -19,105 +16,336 @@
     }
   ],
   "paths": {
-    "/property": {
+    "/api/properties/": {
       "get": {
-        "description": "Returns all properties from the system that the user has access to",
+        "summary": "List properties",
+        "description": "Returns a paginated list of public, live properties (listings and foreclosures).",
+
+        "operationId": "listProperties",
+
         "parameters": [
           {
-            "name": "limit",
+            "name": "page",
             "in": "query",
-            "description": "The maximum number of results to return",
+            "description": "Page number",
             "schema": {
               "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Property response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Property"
-                  }
-                }
-              }
+              "default": 1
             }
           },
-          "400": {
-            "description": "Unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "description": "Creates a new plant in the store",
-        "requestBody": {
-          "description": "Plant to add to the store",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/NewPlant"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "plant response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Plant"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/plants/{id}": {
-      "delete": {
-        "description": "Deletes a single plant based on the ID supplied",
-        "parameters": [
+
           {
-            "name": "id",
-            "in": "path",
-            "description": "ID of plant to delete",
-            "required": true,
+            "name": "page_size",
+            "in": "query",
+            "description": "Number of results per page (max 300)",
             "schema": {
               "type": "integer",
-              "format": "int64"
+              "default": 100,
+              "maximum": 300
+            }
+          },
+
+          {
+            "name": "polymorphic_type",
+            "in": "query",
+            "description": "Restrict results by type",
+            "schema": {
+              "type": "string",
+              "enum": ["listing", "foreclosure"]
+            }
+          },
+
+          {
+            "name": "listing_type",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": ["rent", "sale", "sold"]
+            }
+          },
+
+          {
+            "name": "price_min",
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+
+          {
+            "name": "price_max",
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+
+          {
+            "name": "bedrooms_min",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            }
+          },
+
+          {
+            "name": "bedrooms_max",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            }
+          },
+
+          {
+            "name": "number_of_bathrooms",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            }
+          },
+
+          {
+            "name": "property_type",
+            "in": "query",
+            "description": "Comma-separated property types",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "style": "form",
+            "explode": false
+          },
+
+          {
+            "name": "municipality",
+            "in": "query",
+            "description": "Comma-separated municipality IDs",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            },
+            "style": "form",
+            "explode": false
+          },
+
+          {
+            "name": "region",
+            "in": "query",
+            "description": "Comma-separated region IDs",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            },
+            "style": "form",
+            "explode": false
+          },
+
+          {
+            "name": "lat",
+            "in": "query",
+            "description": "Latitude center point",
+            "schema": {
+              "type": "number"
+            }
+          },
+
+          {
+            "name": "lng",
+            "in": "query",
+            "description": "Longitude center point",
+            "schema": {
+              "type": "number"
+            }
+          },
+
+          {
+            "name": "radius_km",
+            "in": "query",
+            "description": "Search radius in kilometers",
+            "schema": {
+              "type": "number"
             }
           }
         ],
+
         "responses": {
-          "204": {
-            "description": "Plant deleted",
-            "content": {}
+          "200": {
+            "description": "Paginated property results",
+
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedPropertiesResponse"
+                },
+
+                "example": {
+                  "count": 123,
+                  "next": "http://api.example.org/accounts/?page=4",
+                  "previous": "http://api.example.org/accounts/?page=2",
+
+                  "results": [
+                    {
+                      "id": 1,
+
+                      "municipality": {
+                        "id": 1,
+                        "created_at": "2026-05-14T17:34:51.578Z",
+                        "modified_at": "2026-05-14T17:34:51.578Z",
+                        "country": "greece",
+                        "parent_id": 100,
+                        "name_gr": "Αθήνα",
+                        "name_en": "Athens",
+                        "level": 1,
+                        "code": "ATH",
+                        "parent_code": "GR"
+                      },
+
+                      "municipal_unit": {
+                        "id": 2,
+                        "created_at": "2026-05-14T17:34:51.578Z",
+                        "modified_at": "2026-05-14T17:34:51.578Z",
+                        "country": "greece",
+                        "parent_id": 101,
+                        "name_gr": "Κέντρο",
+                        "name_en": "Center",
+                        "level": 2,
+                        "code": "CTR",
+                        "parent_code": "ATH"
+                      },
+
+                      "seller": {
+                        "id": 5,
+                        "display_name": "Example Realty"
+                      },
+
+                      "images": "https://example.com/image.jpg",
+
+                      "created_at": "2026-05-14T17:34:51.578Z",
+                      "modified_at": "2026-05-14T17:34:51.578Z",
+
+                      "polymorphic_type": "listing",
+
+                      "country": "greece",
+
+                      "listing_type": "sale",
+
+                      "source_type": "broker",
+
+                      "source": "spitogatos",
+
+                      "price": 250000,
+
+                      "url": "https://example.com/property/1",
+
+                      "reference_id": "PROP-001",
+
+                      "description": "Modern apartment in Athens center",
+
+                      "address": "Athens, Greece",
+
+                      "latitude": 37.9838,
+
+                      "longitude": 23.7275,
+
+                      "coordinates": "POINT(23.7275 37.9838)",
+
+                      "build_area": 120,
+
+                      "land_area": 150,
+
+                      "uncovered_veranda_area": 10,
+
+                      "covered_veranda_area": 20,
+
+                      "price_per_sqm": 2083,
+
+                      "building_floor_count": 5,
+
+                      "construction_year": 2010,
+
+                      "renovated": true,
+
+                      "renovation_year": 2022,
+
+                      "floor_number": 3,
+
+                      "garage": true,
+
+                      "garden": false,
+
+                      "heating_type": "autonomous",
+
+                      "number_of_bedrooms": 3,
+
+                      "number_of_bathrooms": 2,
+
+                      "property_type": "apartment",
+
+                      "swimming_pool": false,
+
+                      "view": "city",
+
+                      "energy_class": "A",
+
+                      "is_live": true,
+
+                      "is_modified": false,
+
+                      "is_public": true,
+
+                      "is_manually_updated": false,
+
+                      "is_ai_updated": true,
+
+                      "is_ai_processed": true,
+
+                      "is_ai_mismatched": false,
+
+                      "outlier": false,
+
+                      "comparable": true,
+
+                      "last_seen_at": "2026-05-14T17:34:51.578Z",
+
+                      "first_seen_at": "2026-05-14T17:34:51.578Z",
+
+                      "delisted_at": null,
+
+                      "is_duplicated": false,
+
+                      "master_property_id": 1,
+
+                      "is_deduplication_processed": true,
+
+                      "is_master_property": true,
+
+                      "is_leader": true,
+
+                      "polymorphic_ctype": 12,
+
+                      "regional_unit": 3,
+
+                      "region": 1,
+
+                      "neighborhood": 8,
+
+                      "tags": [1, 2, 3]
+                    }
+                  ]
+                }
+              }
+            }
           },
+
           "400": {
-            "description": "unexpected error",
+            "description": "Bad request",
+
             "content": {
               "application/json": {
                 "schema": {
@@ -130,59 +358,377 @@
       }
     }
   },
-
   "components": {
     "schemas": {
-      "Plant": {
-        "required": ["name"],
+      "PaginatedPropertiesResponse": {
         "type": "object",
         "properties": {
-          "name": {
-            "description": "The name of the plant",
+          "count": {
+            "type": "integer"
+          },
+          "next": {
+            "type": ["string", "null"],
+            "format": "uri"
+          },
+          "previous": {
+            "type": ["string", "null"],
+            "format": "uri"
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Property"
+            }
+          }
+        }
+      },
+      "Property": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "municipality": {
+            "$ref": "#/components/schemas/GeoEntity"
+          },
+          "municipal_unit": {
+            "$ref": "#/components/schemas/GeoEntity"
+          },
+          "seller": {
+            "$ref": "#/components/schemas/Seller"
+          },
+          "images": {
             "type": "string"
           },
-          "tag": {
-            "description": "Tag to specify the type",
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "modified_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "polymorphic_type": {
+            "type": "string",
+            "enum": ["listing", "foreclosure"]
+          },
+          "country": {
+            "type": "string"
+          },
+
+          "listing_type": {
+            "type": "string",
+            "enum": ["sale", "rent", "sold"]
+          },
+
+          "source_type": {
+            "type": "string"
+          },
+
+          "source": {
+            "type": "string"
+          },
+
+          "price": {
+            "type": "number"
+          },
+
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
+
+          "reference_id": {
+            "type": "string"
+          },
+
+          "description": {
+            "type": "string"
+          },
+
+          "address": {
+            "type": "string"
+          },
+
+          "latitude": {
+            "type": "number"
+          },
+
+          "longitude": {
+            "type": "number"
+          },
+
+          "coordinates": {
+            "type": "string"
+          },
+
+          "build_area": {
+            "type": "number"
+          },
+
+          "land_area": {
+            "type": "number"
+          },
+
+          "uncovered_veranda_area": {
+            "type": "number"
+          },
+
+          "covered_veranda_area": {
+            "type": "number"
+          },
+
+          "price_per_sqm": {
+            "type": "number"
+          },
+
+          "building_floor_count": {
+            "type": "integer"
+          },
+
+          "construction_year": {
+            "type": "integer"
+          },
+
+          "renovated": {
+            "type": "boolean"
+          },
+
+          "renovation_year": {
+            "type": "integer"
+          },
+
+          "floor_number": {
+            "type": "integer"
+          },
+
+          "garage": {
+            "type": "boolean"
+          },
+
+          "garden": {
+            "type": "boolean"
+          },
+
+          "heating_type": {
+            "type": "string"
+          },
+
+          "number_of_bedrooms": {
+            "type": "integer"
+          },
+
+          "number_of_bathrooms": {
+            "type": "integer"
+          },
+
+          "property_type": {
+            "type": "string"
+          },
+
+          "swimming_pool": {
+            "type": "boolean"
+          },
+
+          "view": {
+            "type": "string"
+          },
+
+          "energy_class": {
+            "type": "string",
+
+            "enum": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E",
+              "F",
+              "G",
+              "Exempt",
+              "Under issuance"
+            ]
+          },
+
+          "is_live": {
+            "type": "boolean"
+          },
+
+          "is_modified": {
+            "type": "boolean"
+          },
+
+          "is_public": {
+            "type": "boolean"
+          },
+
+          "is_manually_updated": {
+            "type": "boolean"
+          },
+
+          "is_ai_updated": {
+            "type": "boolean"
+          },
+
+          "is_ai_processed": {
+            "type": "boolean"
+          },
+
+          "is_ai_mismatched": {
+            "type": "boolean"
+          },
+
+          "outlier": {
+            "type": "boolean"
+          },
+
+          "comparable": {
+            "type": "boolean"
+          },
+
+          "last_seen_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+
+          "first_seen_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+
+          "delisted_at": {
+            "type": ["string", "null"],
+            "format": "date-time"
+          },
+
+          "is_duplicated": {
+            "type": "boolean"
+          },
+
+          "master_property_id": {
+            "type": "integer"
+          },
+
+          "is_deduplication_processed": {
+            "type": "boolean"
+          },
+
+          "is_master_property": {
+            "type": "boolean"
+          },
+
+          "is_leader": {
+            "type": "boolean"
+          },
+
+          "polymorphic_ctype": {
+            "type": "integer"
+          },
+
+          "regional_unit": {
+            "type": "integer"
+          },
+
+          "region": {
+            "type": "integer"
+          },
+
+          "neighborhood": {
+            "type": "integer"
+          },
+
+          "tags": {
+            "type": "array",
+
+            "items": {
+              "type": "integer"
+            }
+          }
+        }
+      },
+
+      "GeoEntity": {
+        "type": "object",
+
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+
+          "modified_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+
+          "country": {
+            "type": "string"
+          },
+
+          "parent_id": {
+            "type": "integer"
+          },
+
+          "name_gr": {
+            "type": "string"
+          },
+
+          "name_en": {
+            "type": "string"
+          },
+
+          "level": {
+            "type": "integer"
+          },
+
+          "code": {
+            "type": "string"
+          },
+
+          "parent_code": {
             "type": "string"
           }
         }
       },
-      "NewPlant": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/Plant"
-          },
-          {
-            "required": ["id"],
-            "type": "object",
-            "properties": {
-              "id": {
-                "description": "Identification number of the plant",
-                "type": "integer",
-                "format": "int64"
-              }
-            }
-          }
-        ]
-      },
-      "Error": {
-        "required": ["error", "message"],
+
+      "Seller": {
         "type": "object",
+
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+
+          "display_name": {
+            "type": "string"
+          }
+        }
+      },
+
+      "Error": {
+        "type": "object",
+
         "properties": {
           "error": {
-            "type": "integer",
-            "format": "int32"
+            "type": "integer"
           },
+
           "message": {
             "type": "string"
           }
         }
       }
     },
+
     "securitySchemes": {
       "bearerAuth": {
         "type": "http",
-        "scheme": "bearer"
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
       }
     }
   }
