@@ -34,7 +34,8 @@
   },
   "logo": {
     "light": "/logo/awlogo.webp",
-    "dark": "/logo/awlogowhite.svg"
+    "dark": "/logo/awlogowhite.svg",
+    "href": "https://ask-wire.com"
   },
   "navbar": {
     "links": [],
