@@ -1,5 +1,146 @@
 ---
 title: "Retrieve a property"
-description: "Retrieve a single property by its ID."
+description: "Retrieve a single property by its Ask Wire ID."
 openapi: "GET /api/properties/{id}/"
 ---
+
+## Overview
+
+Returns a single property record by its Ask Wire `id`. Use the [List properties](/api-reference/endpoint/get) endpoint to discover IDs, or the [Retrieve by reference ID](/api-reference/endpoint/get-by-reference-id) endpoint if you only have the source platform's identifier.
+
+---
+
+## Response fields
+
+### Core fields
+
+| Field              | Type    | Description                                             |
+| ------------------ | ------- | ------------------------------------------------------- |
+| `id`               | integer | Unique Ask Wire property ID.                            |
+| `reference_id`     | string  | The source platform's own identifier for this property. |
+| `polymorphic_type` | string  | Property type: `listing` or `foreclosure`.              |
+| `listing_type`     | string  | For listings: `sale`, `rent`, or `sold`.                |
+| `country`          | string  | Country where the property is located.                  |
+| `address`          | string  | Full address string.                                    |
+| `url`              | string  | Direct URL to the property on its source platform.      |
+| `description`      | string  | Property description as provided by the source.         |
+| `images`           | string  | URL to the property's primary image.                    |
+| `source`           | string  | Source platform name (e.g. `spitogatos`, `xe`).         |
+| `source_type`      | string  | Source category (e.g. `broker`, `owner`).               |
+| `tags`             | array   | List of tag IDs associated with the property.           |
+
+---
+
+### Price
+
+| Field           | Type   | Description                          |
+| --------------- | ------ | ------------------------------------ |
+| `price`         | number | Listed price in euros.               |
+| `price_per_sqm` | number | Price divided by build area (€/sqm). |
+
+---
+
+### Location
+
+| Field            | Type    | Description                                             |
+| ---------------- | ------- | ------------------------------------------------------- |
+| `latitude`       | number  | Latitude coordinate.                                    |
+| `longitude`      | number  | Longitude coordinate.                                   |
+| `coordinates`    | string  | WKT point string (e.g. `POINT(23.7275 37.9838)`).       |
+| `region`         | integer | ID of the region (level 3 in the geographic hierarchy). |
+| `regional_unit`  | integer | ID of the regional unit (level 4).                      |
+| `municipality`   | object  | Municipality object. See [GeoEntity](#geoentity).       |
+| `municipal_unit` | object  | Municipal unit object. See [GeoEntity](#geoentity).     |
+| `neighborhood`   | integer | ID of the neighborhood.                                 |
+
+---
+
+### Size & layout
+
+| Field                    | Type    | Description                             |
+| ------------------------ | ------- | --------------------------------------- |
+| `build_area`             | number  | Built area in sqm.                      |
+| `land_area`              | number  | Land area in sqm.                       |
+| `covered_veranda_area`   | number  | Covered veranda area in sqm.            |
+| `uncovered_veranda_area` | number  | Uncovered veranda area in sqm.          |
+| `number_of_bedrooms`     | integer | Number of bedrooms.                     |
+| `number_of_bathrooms`    | integer | Number of bathrooms.                    |
+| `floor_number`           | integer | Floor the property is on.               |
+| `building_floor_count`   | integer | Total number of floors in the building. |
+
+---
+
+### Building details
+
+| Field               | Type    | Description                                                                |
+| ------------------- | ------- | -------------------------------------------------------------------------- |
+| `construction_year` | integer | Year the building was constructed.                                         |
+| `renovated`         | boolean | Whether the property has been renovated.                                   |
+| `renovation_year`   | integer | Year of the most recent renovation.                                        |
+| `property_type`     | string  | Property category (e.g. `apartment`, `house`, `land`).                     |
+| `heating_type`      | string  | Type of heating system (e.g. `autonomous`, `central`).                     |
+| `energy_class`      | string  | Energy performance rating: `A` through `G`, `Exempt`, or `Under issuance`. |
+| `view`              | string  | Type of view from the property (e.g. `sea`, `city`, `mountain`).           |
+| `garage`            | boolean | Whether the property includes a garage.                                    |
+| `garden`            | boolean | Whether the property includes a garden.                                    |
+| `swimming_pool`     | boolean | Whether the property includes a swimming pool.                             |
+
+---
+
+### Status & data quality
+
+| Field                        | Type    | Description                                                 |
+| ---------------------------- | ------- | ----------------------------------------------------------- |
+| `is_live`                    | boolean | Property is currently active on its source platform.        |
+| `is_public`                  | boolean | Property is publicly visible.                               |
+| `is_modified`                | boolean | Property data has been modified since first ingestion.      |
+| `is_manually_updated`        | boolean | A human has manually updated this property's data.          |
+| `is_ai_updated`              | boolean | AI has updated this property's data.                        |
+| `is_ai_processed`            | boolean | Property has been processed by the AI pipeline.             |
+| `comparable`                 | boolean | Property is suitable for use as a comparable in valuations. |
+| `outlier`                    | boolean | Property is flagged as a statistical outlier.               |
+| `is_duplicated`              | boolean | Property is a duplicate of another record.                  |
+| `is_master_property`         | boolean | Property is the canonical record in a duplicate group.      |
+| `is_leader`                  | boolean | Property is the current active leader in a duplicate group. |
+| `is_deduplication_processed` | boolean | Deduplication has been run on this property.                |
+| `master_property_id`         | integer | ID of the master property if this is a duplicate.           |
+
+---
+
+### Timestamps
+
+| Field           | Type             | Description                                            |
+| --------------- | ---------------- | ------------------------------------------------------ |
+| `created_at`    | datetime         | When the record was created in the Ask Wire database.  |
+| `modified_at`   | datetime         | When the record was last modified.                     |
+| `first_seen_at` | datetime         | When the property was first observed live.             |
+| `last_seen_at`  | datetime         | When the property was last observed live.              |
+| `delisted_at`   | datetime \| null | When the property was taken off market, if applicable. |
+
+---
+
+### Seller
+
+| Field          | Type    | Description            |
+| -------------- | ------- | ---------------------- |
+| `id`           | integer | Unique seller ID.      |
+| `display_name` | string  | Seller's display name. |
+
+---
+
+### GeoEntity
+
+Returned for `municipality` and `municipal_unit` fields.
+
+| Field         | Type     | Description                          |
+| ------------- | -------- | ------------------------------------ |
+| `id`          | integer  | Unique ID.                           |
+| `name_en`     | string   | Name in English.                     |
+| `name_gr`     | string   | Name in Greek.                       |
+| `code`        | string   | Short code for this geographic unit. |
+| `parent_code` | string   | Code of the parent geographic unit.  |
+| `parent_id`   | integer  | ID of the parent geographic unit.    |
+| `level`       | integer  | Level in the geographic hierarchy.   |
+| `country`     | string   | Country this unit belongs to.        |
+| `created_at`  | datetime | When this record was created.        |
+| `modified_at` | datetime | When this record was last modified.  |
