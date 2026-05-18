@@ -24,180 +24,495 @@
     "/api/properties/": {
       "get": {
         "summary": "List properties",
-        "description": "Returns a paginated list of public, live properties (listings and foreclosures).",
-
+        "description": "Returns a paginated list of public, live properties (listings and foreclosures). Use `polymorphic_type=listing` or `polymorphic_type=foreclosure` to restrict to a single type. Supports `page` and `page_size` (default 100, max 300).",
         "operationId": "listProperties",
-
         "parameters": [
           {
             "name": "page",
             "in": "query",
-            "description": "Page number",
-            "schema": {
-              "type": "integer",
-              "default": 1
-            }
+            "description": "Page number within the paginated result set.",
+            "schema": { "type": "integer", "default": 1 }
           },
-
           {
             "name": "page_size",
             "in": "query",
-            "description": "Number of results per page (max 300)",
-            "schema": {
-              "type": "integer",
-              "default": 100,
-              "maximum": 300
-            }
+            "description": "Number of results per page (max 300).",
+            "schema": { "type": "integer", "default": 100, "maximum": 300 }
           },
-
           {
             "name": "polymorphic_type",
             "in": "query",
-            "description": "Restrict results by type",
-            "schema": {
-              "type": "string",
-              "enum": ["listing", "foreclosure"]
-            }
+            "description": "Restrict results to a single property type.",
+            "schema": { "type": "string", "enum": ["listing", "foreclosure"] }
           },
-
           {
             "name": "listing_type",
             "in": "query",
-            "schema": {
-              "type": "string",
-              "enum": ["rent", "sale", "sold"]
-            }
+            "description": "Filter by listing type.",
+            "schema": { "type": "string", "enum": ["rent", "sale", "sold"] }
           },
-
+          {
+            "name": "listing_types",
+            "in": "query",
+            "description": "Filter by multiple listing types. Comma-separated.",
+            "schema": {
+              "type": "array",
+              "items": { "type": "string", "enum": ["rent", "sale", "sold"] }
+            },
+            "style": "form",
+            "explode": false
+          },
+          {
+            "name": "ids",
+            "in": "query",
+            "description": "Filter by specific property IDs. Multiple values may be separated by commas.",
+            "schema": { "type": "array", "items": { "type": "integer" } },
+            "style": "form",
+            "explode": false
+          },
+          {
+            "name": "reference_id",
+            "in": "query",
+            "schema": { "type": "string" }
+          },
           {
             "name": "price_min",
             "in": "query",
-            "schema": {
-              "type": "number"
-            }
+            "schema": { "type": "number" }
           },
-
           {
             "name": "price_max",
             "in": "query",
-            "schema": {
-              "type": "number"
-            }
+            "schema": { "type": "number" }
           },
-
+          {
+            "name": "price",
+            "in": "query",
+            "description": "Exact price match.",
+            "schema": { "type": "number" }
+          },
+          {
+            "name": "price_per_sqm",
+            "in": "query",
+            "schema": { "type": "number" }
+          },
           {
             "name": "bedrooms_min",
             "in": "query",
-            "schema": {
-              "type": "integer"
-            }
+            "schema": { "type": "integer" }
           },
-
           {
             "name": "bedrooms_max",
             "in": "query",
-            "schema": {
-              "type": "integer"
-            }
+            "schema": { "type": "integer" }
           },
-
+          {
+            "name": "number_of_bedrooms",
+            "in": "query",
+            "description": "Exact number of bedrooms.",
+            "schema": { "type": "integer" }
+          },
           {
             "name": "number_of_bathrooms",
             "in": "query",
-            "schema": {
-              "type": "integer"
-            }
+            "schema": { "type": "integer" }
           },
-
           {
             "name": "property_type",
             "in": "query",
-            "description": "Comma-separated property types",
-            "schema": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            },
+            "description": "Comma-separated property types.",
+            "schema": { "type": "array", "items": { "type": "string" } },
             "style": "form",
             "explode": false
           },
-
+          {
+            "name": "build_area",
+            "in": "query",
+            "description": "Exact build area in sqm.",
+            "schema": { "type": "number" }
+          },
+          {
+            "name": "build_area_min",
+            "in": "query",
+            "schema": { "type": "number" }
+          },
+          {
+            "name": "build_area_max",
+            "in": "query",
+            "schema": { "type": "number" }
+          },
+          {
+            "name": "land_area",
+            "in": "query",
+            "description": "Exact land area in sqm.",
+            "schema": { "type": "number" }
+          },
+          {
+            "name": "land_area_min",
+            "in": "query",
+            "schema": { "type": "number" }
+          },
+          {
+            "name": "land_area_max",
+            "in": "query",
+            "schema": { "type": "number" }
+          },
+          {
+            "name": "covered_veranda_area",
+            "in": "query",
+            "schema": { "type": "number", "format": "float" }
+          },
+          {
+            "name": "uncovered_veranda_area",
+            "in": "query",
+            "schema": { "type": "number", "format": "float" }
+          },
+          {
+            "name": "floor_number",
+            "in": "query",
+            "schema": { "type": "integer" }
+          },
+          {
+            "name": "building_floor_count",
+            "in": "query",
+            "schema": { "type": "integer" }
+          },
+          {
+            "name": "construction_year",
+            "in": "query",
+            "description": "Exact construction year.",
+            "schema": { "type": "integer" }
+          },
+          {
+            "name": "construction_year_min",
+            "in": "query",
+            "schema": { "type": "integer" }
+          },
+          {
+            "name": "construction_year_max",
+            "in": "query",
+            "schema": { "type": "integer" }
+          },
+          {
+            "name": "renovation_year",
+            "in": "query",
+            "schema": { "type": "integer" }
+          },
+          {
+            "name": "renovated",
+            "in": "query",
+            "schema": { "type": "boolean" }
+          },
+          {
+            "name": "energy_class",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "A",
+                "B",
+                "C",
+                "D",
+                "E",
+                "F",
+                "G",
+                "Exempt",
+                "Under issuance"
+              ]
+            }
+          },
+          {
+            "name": "heating_type",
+            "in": "query",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "view",
+            "in": "query",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "garage",
+            "in": "query",
+            "schema": { "type": "boolean" }
+          },
+          {
+            "name": "garden",
+            "in": "query",
+            "schema": { "type": "boolean" }
+          },
+          {
+            "name": "swimming_pool",
+            "in": "query",
+            "schema": { "type": "boolean" }
+          },
           {
             "name": "municipality",
             "in": "query",
-            "description": "Comma-separated municipality IDs",
-            "schema": {
-              "type": "array",
-              "items": {
-                "type": "integer"
-              }
-            },
+            "description": "Comma-separated municipality IDs.",
+            "schema": { "type": "array", "items": { "type": "integer" } },
             "style": "form",
             "explode": false
           },
-
+          {
+            "name": "municipal_unit",
+            "in": "query",
+            "description": "Comma-separated municipal unit IDs.",
+            "schema": { "type": "array", "items": { "type": "integer" } },
+            "style": "form",
+            "explode": false
+          },
           {
             "name": "region",
             "in": "query",
-            "description": "Comma-separated region IDs",
-            "schema": {
-              "type": "array",
-              "items": {
-                "type": "integer"
-              }
-            },
+            "description": "Comma-separated region IDs.",
+            "schema": { "type": "array", "items": { "type": "integer" } },
             "style": "form",
             "explode": false
           },
-
+          {
+            "name": "regional_unit",
+            "in": "query",
+            "description": "Comma-separated regional unit IDs.",
+            "schema": { "type": "array", "items": { "type": "integer" } },
+            "style": "form",
+            "explode": false
+          },
+          {
+            "name": "neighborhood",
+            "in": "query",
+            "description": "Comma-separated neighborhood IDs.",
+            "schema": { "type": "array", "items": { "type": "integer" } },
+            "style": "form",
+            "explode": false
+          },
+          {
+            "name": "country",
+            "in": "query",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "address",
+            "in": "query",
+            "schema": { "type": "string" }
+          },
           {
             "name": "lat",
             "in": "query",
-            "description": "Latitude center point",
-            "schema": {
-              "type": "number"
-            }
+            "description": "Latitude of center point. Use with `lng` and `radius_km`.",
+            "schema": { "type": "number" }
           },
-
           {
             "name": "lng",
             "in": "query",
-            "description": "Longitude center point",
-            "schema": {
-              "type": "number"
-            }
+            "description": "Longitude of center point. Use with `lat` and `radius_km`.",
+            "schema": { "type": "number" }
           },
-
           {
             "name": "radius_km",
             "in": "query",
-            "description": "Search radius in kilometers",
-            "schema": {
-              "type": "number"
-            }
+            "description": "Search radius in kilometers. Use with `lat` and `lng`.",
+            "schema": { "type": "number" }
+          },
+          {
+            "name": "latitude",
+            "in": "query",
+            "schema": { "type": "number" }
+          },
+          {
+            "name": "latitude_min",
+            "in": "query",
+            "schema": { "type": "number" }
+          },
+          {
+            "name": "latitude_max",
+            "in": "query",
+            "schema": { "type": "number" }
+          },
+          {
+            "name": "longitude",
+            "in": "query",
+            "schema": { "type": "number" }
+          },
+          {
+            "name": "longitude_min",
+            "in": "query",
+            "schema": { "type": "number" }
+          },
+          {
+            "name": "longitude_max",
+            "in": "query",
+            "schema": { "type": "number" }
+          },
+          {
+            "name": "polygon",
+            "in": "query",
+            "description": "Comma-separated `lng lat` pairs forming a closed polygon.",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "wkt",
+            "in": "query",
+            "description": "WKT geometry string (e.g. `POLYGON((lng lat, ...))`).",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "seller",
+            "in": "query",
+            "schema": { "type": "integer" }
+          },
+          {
+            "name": "source",
+            "in": "query",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "source_type",
+            "in": "query",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "source_types",
+            "in": "query",
+            "description": "Comma-separated source types.",
+            "schema": { "type": "array", "items": { "type": "string" } },
+            "style": "form",
+            "explode": false
+          },
+          {
+            "name": "tags",
+            "in": "query",
+            "description": "Comma-separated tag IDs.",
+            "schema": { "type": "array", "items": { "type": "integer" } },
+            "style": "form",
+            "explode": false
+          },
+          {
+            "name": "comparable",
+            "in": "query",
+            "schema": { "type": "boolean" }
+          },
+          {
+            "name": "outlier",
+            "in": "query",
+            "schema": { "type": "boolean" }
+          },
+          {
+            "name": "is_live",
+            "in": "query",
+            "schema": { "type": "boolean" }
+          },
+          {
+            "name": "is_public",
+            "in": "query",
+            "schema": { "type": "boolean" }
+          },
+          {
+            "name": "is_modified",
+            "in": "query",
+            "schema": { "type": "boolean" }
+          },
+          {
+            "name": "is_manually_updated",
+            "in": "query",
+            "schema": { "type": "boolean" }
+          },
+          {
+            "name": "is_ai_updated",
+            "in": "query",
+            "schema": { "type": "boolean" }
+          },
+          {
+            "name": "is_ai_processed",
+            "in": "query",
+            "schema": { "type": "boolean" }
+          },
+          {
+            "name": "is_ai_mismatched",
+            "in": "query",
+            "schema": { "type": "boolean" }
+          },
+          {
+            "name": "is_duplicated",
+            "in": "query",
+            "schema": { "type": "boolean" }
+          },
+          {
+            "name": "is_master_property",
+            "in": "query",
+            "schema": { "type": "boolean" }
+          },
+          {
+            "name": "is_deduplication_processed",
+            "in": "query",
+            "schema": { "type": "boolean" }
+          },
+          {
+            "name": "is_leader",
+            "in": "query",
+            "schema": { "type": "boolean" }
+          },
+          {
+            "name": "master_property_id",
+            "in": "query",
+            "schema": { "type": "integer" }
+          },
+          {
+            "name": "polymorphic_ctype",
+            "in": "query",
+            "schema": { "type": "integer" }
+          },
+          {
+            "name": "created_at",
+            "in": "query",
+            "schema": { "type": "string", "format": "date-time" }
+          },
+          {
+            "name": "modified_at",
+            "in": "query",
+            "schema": { "type": "string", "format": "date-time" }
+          },
+          {
+            "name": "first_seen_at",
+            "in": "query",
+            "schema": { "type": "string", "format": "date-time" }
+          },
+          {
+            "name": "last_seen_at",
+            "in": "query",
+            "schema": { "type": "string", "format": "date-time" }
+          },
+          {
+            "name": "delisted_at",
+            "in": "query",
+            "schema": { "type": "string", "format": "date-time" }
+          },
+          {
+            "name": "description",
+            "in": "query",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "url",
+            "in": "query",
+            "schema": { "type": "string" }
           }
         ],
-
         "responses": {
           "200": {
             "description": "Paginated property results",
-
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/PaginatedPropertiesResponse"
                 },
-
                 "example": {
                   "count": 123,
                   "next": "http://api.example.org/accounts/?page=4",
                   "previous": "http://api.example.org/accounts/?page=2",
-
                   "results": [
                     {
                       "id": 1,
-
                       "municipality": {
                         "id": 1,
                         "created_at": "2026-05-14T17:34:51.578Z",
@@ -210,7 +525,6 @@
                         "code": "ATH",
                         "parent_code": "GR"
                       },
-
                       "municipal_unit": {
                         "id": 2,
                         "created_at": "2026-05-14T17:34:51.578Z",
@@ -223,123 +537,63 @@
                         "code": "CTR",
                         "parent_code": "ATH"
                       },
-
-                      "seller": {
-                        "id": 5,
-                        "display_name": "Example Realty"
-                      },
-
+                      "seller": { "id": 5, "display_name": "Example Realty" },
                       "images": "https://example.com/image.jpg",
-
                       "created_at": "2026-05-14T17:34:51.578Z",
                       "modified_at": "2026-05-14T17:34:51.578Z",
-
                       "polymorphic_type": "listing",
-
                       "country": "greece",
-
                       "listing_type": "sale",
-
                       "source_type": "broker",
-
                       "source": "spitogatos",
-
                       "price": 250000,
-
                       "url": "https://example.com/property/1",
-
                       "reference_id": "PROP-001",
-
                       "description": "Modern apartment in Athens center",
-
                       "address": "Athens, Greece",
-
                       "latitude": 37.9838,
-
                       "longitude": 23.7275,
-
                       "coordinates": "POINT(23.7275 37.9838)",
-
                       "build_area": 120,
-
                       "land_area": 150,
-
                       "uncovered_veranda_area": 10,
-
                       "covered_veranda_area": 20,
-
                       "price_per_sqm": 2083,
-
                       "building_floor_count": 5,
-
                       "construction_year": 2010,
-
                       "renovated": true,
-
                       "renovation_year": 2022,
-
                       "floor_number": 3,
-
                       "garage": true,
-
                       "garden": false,
-
                       "heating_type": "autonomous",
-
                       "number_of_bedrooms": 3,
-
                       "number_of_bathrooms": 2,
-
                       "property_type": "apartment",
-
                       "swimming_pool": false,
-
                       "view": "city",
-
                       "energy_class": "A",
-
                       "is_live": true,
-
                       "is_modified": false,
-
                       "is_public": true,
-
                       "is_manually_updated": false,
-
                       "is_ai_updated": true,
-
                       "is_ai_processed": true,
-
                       "is_ai_mismatched": false,
-
                       "outlier": false,
-
                       "comparable": true,
-
                       "last_seen_at": "2026-05-14T17:34:51.578Z",
-
                       "first_seen_at": "2026-05-14T17:34:51.578Z",
-
                       "delisted_at": null,
-
                       "is_duplicated": false,
-
                       "master_property_id": 1,
-
                       "is_deduplication_processed": true,
-
                       "is_master_property": true,
-
                       "is_leader": true,
-
                       "polymorphic_ctype": 12,
-
                       "regional_unit": 3,
-
                       "region": 1,
-
                       "neighborhood": 8,
-
                       "tags": [1, 2, 3]
                     }
                   ]
@@ -347,18 +601,64 @@
               }
             }
           },
-
           "400": {
             "description": "Bad request",
-
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
+                "schema": { "$ref": "#/components/schemas/Error" }
               }
             }
           }
+        }
+      }
+    },
+    "/api/properties/{id}/": {
+      "get": {
+        "summary": "Retrieve a property",
+        "operationId": "retrieveProperty",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A single property",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Property" }
+              }
+            }
+          },
+          "404": { "description": "Not found" }
+        }
+      }
+    },
+    "/api/properties/ref-id/{reference_id}/": {
+      "get": {
+        "summary": "Retrieve a property by reference ID",
+        "operationId": "retrievePropertyByReferenceId",
+        "parameters": [
+          {
+            "name": "reference_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A single property",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Property" }
+              }
+            }
+          },
+          "404": { "description": "Not found" }
         }
       }
     },
@@ -366,11 +666,7 @@
       "post": {
         "summary": "Login",
         "security": [],
-        "servers": [
-          {
-            "url": "https://zeus.ask-wire.com"
-          }
-        ],
+        "servers": [{ "url": "https://zeus.ask-wire.com" }],
         "requestBody": {
           "required": true,
           "content": {
@@ -383,19 +679,14 @@
                     "type": "string",
                     "example": "user@example.com"
                   },
-                  "password": {
-                    "type": "string",
-                    "example": "your_password"
-                  }
+                  "password": { "type": "string", "example": "your_password" }
                 }
               }
             }
           }
         },
         "responses": {
-          "200": {
-            "description": "OK"
-          }
+          "200": { "description": "OK" }
         }
       }
     }
@@ -405,180 +696,64 @@
       "PaginatedPropertiesResponse": {
         "type": "object",
         "properties": {
-          "count": {
-            "type": "integer"
-          },
-          "next": {
-            "type": ["string", "null"],
-            "format": "uri"
-          },
-          "previous": {
-            "type": ["string", "null"],
-            "format": "uri"
-          },
+          "count": { "type": "integer" },
+          "next": { "type": ["string", "null"], "format": "uri" },
+          "previous": { "type": ["string", "null"], "format": "uri" },
           "results": {
             "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Property"
-            }
+            "items": { "$ref": "#/components/schemas/Property" }
           }
         }
       },
       "Property": {
         "type": "object",
         "properties": {
-          "id": {
-            "type": "integer"
-          },
-          "municipality": {
-            "$ref": "#/components/schemas/GeoEntity"
-          },
-          "municipal_unit": {
-            "$ref": "#/components/schemas/GeoEntity"
-          },
-          "seller": {
-            "$ref": "#/components/schemas/Seller"
-          },
-          "images": {
-            "type": "string"
-          },
-          "created_at": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "modified_at": {
-            "type": "string",
-            "format": "date-time"
-          },
+          "id": { "type": "integer" },
+          "municipality": { "$ref": "#/components/schemas/GeoEntity" },
+          "municipal_unit": { "$ref": "#/components/schemas/GeoEntity" },
+          "seller": { "$ref": "#/components/schemas/Seller" },
+          "images": { "type": "string" },
+          "created_at": { "type": "string", "format": "date-time" },
+          "modified_at": { "type": "string", "format": "date-time" },
           "polymorphic_type": {
             "type": "string",
             "enum": ["listing", "foreclosure"]
           },
-          "country": {
-            "type": "string"
-          },
-
+          "country": { "type": "string" },
           "listing_type": {
             "type": "string",
             "enum": ["sale", "rent", "sold"]
           },
-
-          "source_type": {
-            "type": "string"
-          },
-
-          "source": {
-            "type": "string"
-          },
-
-          "price": {
-            "type": "number"
-          },
-
-          "url": {
-            "type": "string",
-            "format": "uri"
-          },
-
-          "reference_id": {
-            "type": "string"
-          },
-
-          "description": {
-            "type": "string"
-          },
-
-          "address": {
-            "type": "string"
-          },
-
-          "latitude": {
-            "type": "number"
-          },
-
-          "longitude": {
-            "type": "number"
-          },
-
-          "coordinates": {
-            "type": "string"
-          },
-
-          "build_area": {
-            "type": "number"
-          },
-
-          "land_area": {
-            "type": "number"
-          },
-
-          "uncovered_veranda_area": {
-            "type": "number"
-          },
-
-          "covered_veranda_area": {
-            "type": "number"
-          },
-
-          "price_per_sqm": {
-            "type": "number"
-          },
-
-          "building_floor_count": {
-            "type": "integer"
-          },
-
-          "construction_year": {
-            "type": "integer"
-          },
-
-          "renovated": {
-            "type": "boolean"
-          },
-
-          "renovation_year": {
-            "type": "integer"
-          },
-
-          "floor_number": {
-            "type": "integer"
-          },
-
-          "garage": {
-            "type": "boolean"
-          },
-
-          "garden": {
-            "type": "boolean"
-          },
-
-          "heating_type": {
-            "type": "string"
-          },
-
-          "number_of_bedrooms": {
-            "type": "integer"
-          },
-
-          "number_of_bathrooms": {
-            "type": "integer"
-          },
-
-          "property_type": {
-            "type": "string"
-          },
-
-          "swimming_pool": {
-            "type": "boolean"
-          },
-
-          "view": {
-            "type": "string"
-          },
-
+          "source_type": { "type": "string" },
+          "source": { "type": "string" },
+          "price": { "type": "number" },
+          "url": { "type": "string", "format": "uri" },
+          "reference_id": { "type": "string" },
+          "description": { "type": "string" },
+          "address": { "type": "string" },
+          "latitude": { "type": "number" },
+          "longitude": { "type": "number" },
+          "coordinates": { "type": "string" },
+          "build_area": { "type": "number" },
+          "land_area": { "type": "number" },
+          "uncovered_veranda_area": { "type": "number" },
+          "covered_veranda_area": { "type": "number" },
+          "price_per_sqm": { "type": "number" },
+          "building_floor_count": { "type": "integer" },
+          "construction_year": { "type": "integer" },
+          "renovated": { "type": "boolean" },
+          "renovation_year": { "type": "integer" },
+          "floor_number": { "type": "integer" },
+          "garage": { "type": "boolean" },
+          "garden": { "type": "boolean" },
+          "heating_type": { "type": "string" },
+          "number_of_bedrooms": { "type": "integer" },
+          "number_of_bathrooms": { "type": "integer" },
+          "property_type": { "type": "string" },
+          "swimming_pool": { "type": "boolean" },
+          "view": { "type": "string" },
           "energy_class": {
             "type": "string",
-
             "enum": [
               "A",
               "B",
@@ -591,181 +766,60 @@
               "Under issuance"
             ]
           },
-
-          "is_live": {
-            "type": "boolean"
-          },
-
-          "is_modified": {
-            "type": "boolean"
-          },
-
-          "is_public": {
-            "type": "boolean"
-          },
-
-          "is_manually_updated": {
-            "type": "boolean"
-          },
-
-          "is_ai_updated": {
-            "type": "boolean"
-          },
-
-          "is_ai_processed": {
-            "type": "boolean"
-          },
-
-          "is_ai_mismatched": {
-            "type": "boolean"
-          },
-
-          "outlier": {
-            "type": "boolean"
-          },
-
-          "comparable": {
-            "type": "boolean"
-          },
-
-          "last_seen_at": {
-            "type": "string",
-            "format": "date-time"
-          },
-
-          "first_seen_at": {
-            "type": "string",
-            "format": "date-time"
-          },
-
-          "delisted_at": {
-            "type": ["string", "null"],
-            "format": "date-time"
-          },
-
-          "is_duplicated": {
-            "type": "boolean"
-          },
-
-          "master_property_id": {
-            "type": "integer"
-          },
-
-          "is_deduplication_processed": {
-            "type": "boolean"
-          },
-
-          "is_master_property": {
-            "type": "boolean"
-          },
-
-          "is_leader": {
-            "type": "boolean"
-          },
-
-          "polymorphic_ctype": {
-            "type": "integer"
-          },
-
-          "regional_unit": {
-            "type": "integer"
-          },
-
-          "region": {
-            "type": "integer"
-          },
-
-          "neighborhood": {
-            "type": "integer"
-          },
-
-          "tags": {
-            "type": "array",
-
-            "items": {
-              "type": "integer"
-            }
-          }
+          "is_live": { "type": "boolean" },
+          "is_modified": { "type": "boolean" },
+          "is_public": { "type": "boolean" },
+          "is_manually_updated": { "type": "boolean" },
+          "is_ai_updated": { "type": "boolean" },
+          "is_ai_processed": { "type": "boolean" },
+          "is_ai_mismatched": { "type": "boolean" },
+          "outlier": { "type": "boolean" },
+          "comparable": { "type": "boolean" },
+          "last_seen_at": { "type": "string", "format": "date-time" },
+          "first_seen_at": { "type": "string", "format": "date-time" },
+          "delisted_at": { "type": ["string", "null"], "format": "date-time" },
+          "is_duplicated": { "type": "boolean" },
+          "master_property_id": { "type": "integer" },
+          "is_deduplication_processed": { "type": "boolean" },
+          "is_master_property": { "type": "boolean" },
+          "is_leader": { "type": "boolean" },
+          "polymorphic_ctype": { "type": "integer" },
+          "regional_unit": { "type": "integer" },
+          "region": { "type": "integer" },
+          "neighborhood": { "type": "integer" },
+          "tags": { "type": "array", "items": { "type": "integer" } }
         }
       },
-
       "GeoEntity": {
         "type": "object",
-
         "properties": {
-          "id": {
-            "type": "integer"
-          },
-
-          "created_at": {
-            "type": "string",
-            "format": "date-time"
-          },
-
-          "modified_at": {
-            "type": "string",
-            "format": "date-time"
-          },
-
-          "country": {
-            "type": "string"
-          },
-
-          "parent_id": {
-            "type": "integer"
-          },
-
-          "name_gr": {
-            "type": "string"
-          },
-
-          "name_en": {
-            "type": "string"
-          },
-
-          "level": {
-            "type": "integer"
-          },
-
-          "code": {
-            "type": "string"
-          },
-
-          "parent_code": {
-            "type": "string"
-          }
+          "id": { "type": "integer" },
+          "created_at": { "type": "string", "format": "date-time" },
+          "modified_at": { "type": "string", "format": "date-time" },
+          "country": { "type": "string" },
+          "parent_id": { "type": "integer" },
+          "name_gr": { "type": "string" },
+          "name_en": { "type": "string" },
+          "level": { "type": "integer" },
+          "code": { "type": "string" },
+          "parent_code": { "type": "string" }
         }
       },
-
       "Seller": {
         "type": "object",
-
         "properties": {
-          "id": {
-            "type": "integer"
-          },
-
-          "display_name": {
-            "type": "string"
-          }
+          "id": { "type": "integer" },
+          "display_name": { "type": "string" }
         }
       },
-
       "Error": {
         "type": "object",
-
         "properties": {
-          "error": {
-            "type": "integer"
-          },
-
-          "message": {
-            "type": "string"
-          }
+          "error": { "type": "integer" },
+          "message": { "type": "string" }
         }
       }
     },
-
     "securitySchemes": {
       "bearerAuth": {
         "type": "http",

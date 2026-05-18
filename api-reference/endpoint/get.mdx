@@ -1,4 +1,231 @@
 ---
-title: "Get Properties"
+title: "List properties"
+description: "Returns a paginated list of public, live properties — listings and foreclosures."
 openapi: "GET /api/properties/"
 ---
+
+## Overview
+
+The properties endpoint returns all public, live property records from the Ask Wire database. Results include both listings and foreclosures by default. Use `polymorphic_type` to restrict to one type.
+
+All responses are paginated. The default page size is `100`, with a maximum of `300`.
+
+---
+
+## Query parameters
+
+### Pagination
+
+| Parameter   | Type    | Default | Description                         |
+| ----------- | ------- | ------- | ----------------------------------- |
+| `page`      | integer | `1`     | Page number within the result set.  |
+| `page_size` | integer | `100`   | Results per page. Maximum is `300`. |
+
+---
+
+### Property type
+
+| Parameter          | Type   | Values                         | Description                                                               |
+| ------------------ | ------ | ------------------------------ | ------------------------------------------------------------------------- |
+| `polymorphic_type` | string | `listing`, `foreclosure`       | Restrict results to a single property type.                               |
+| `listing_type`     | string | `sale`, `rent`, `sold`         | Filter by listing type.                                                   |
+| `listing_types`    | array  | `sale`, `rent`, `sold`, `null` | Filter by multiple listing types. Comma-separated.                        |
+| `property_type`    | array  | string                         | Filter by property category (e.g. `apartment`, `house`). Comma-separated. |
+
+---
+
+### Identifiers
+
+| Parameter            | Type    | Description                                                |
+| -------------------- | ------- | ---------------------------------------------------------- |
+| `ids`                | array   | Filter by specific property IDs. Comma-separated integers. |
+| `reference_id`       | string  | Filter by the source system's reference ID.                |
+| `seller`             | integer | Filter by seller ID.                                       |
+| `master_property_id` | integer | Filter duplicates by their master property ID.             |
+| `polymorphic_ctype`  | integer | Internal content type ID.                                  |
+
+---
+
+### Price
+
+| Parameter       | Type   | Description                   |
+| --------------- | ------ | ----------------------------- |
+| `price`         | number | Exact price match.            |
+| `price_min`     | number | Minimum price.                |
+| `price_max`     | number | Maximum price.                |
+| `price_per_sqm` | number | Exact price per square meter. |
+
+---
+
+### Size & area
+
+| Parameter                | Type   | Description                    |
+| ------------------------ | ------ | ------------------------------ |
+| `build_area`             | number | Exact build area in sqm.       |
+| `build_area_min`         | number | Minimum build area.            |
+| `build_area_max`         | number | Maximum build area.            |
+| `land_area`              | number | Exact land area in sqm.        |
+| `land_area_min`          | number | Minimum land area.             |
+| `land_area_max`          | number | Maximum land area.             |
+| `covered_veranda_area`   | float  | Covered veranda area in sqm.   |
+| `uncovered_veranda_area` | float  | Uncovered veranda area in sqm. |
+
+---
+
+### Rooms & layout
+
+| Parameter              | Type    | Description                   |
+| ---------------------- | ------- | ----------------------------- |
+| `number_of_bedrooms`   | integer | Exact number of bedrooms.     |
+| `bedrooms_min`         | integer | Minimum number of bedrooms.   |
+| `bedrooms_max`         | integer | Maximum number of bedrooms.   |
+| `number_of_bathrooms`  | integer | Number of bathrooms.          |
+| `floor_number`         | integer | Floor the property is on.     |
+| `building_floor_count` | integer | Total floors in the building. |
+
+---
+
+### Building details
+
+| Parameter               | Type    | Values                                                        | Description                                 |
+| ----------------------- | ------- | ------------------------------------------------------------- | ------------------------------------------- |
+| `construction_year`     | integer |                                                               | Exact construction year.                    |
+| `construction_year_min` | integer |                                                               | Minimum construction year.                  |
+| `construction_year_max` | integer |                                                               | Maximum construction year.                  |
+| `renovated`             | boolean | `true`, `false`                                               | Whether the property has been renovated.    |
+| `renovation_year`       | integer |                                                               | Year of renovation.                         |
+| `energy_class`          | string  | `A`, `B`, `C`, `D`, `E`, `F`, `G`, `Exempt`, `Under issuance` | Energy performance certificate rating.      |
+| `heating_type`          | string  |                                                               | Type of heating system.                     |
+| `view`                  | string  |                                                               | View type (e.g. `sea`, `city`, `mountain`). |
+| `garage`                | boolean | `true`, `false`                                               | Has a garage.                               |
+| `garden`                | boolean | `true`, `false`                                               | Has a garden.                               |
+| `swimming_pool`         | boolean | `true`, `false`                                               | Has a swimming pool.                        |
+
+---
+
+### Geographic filters
+
+#### Administrative boundaries
+
+Use these to filter by region in the Ask Wire geographic hierarchy (region → regional unit → municipality → municipal unit → neighborhood).
+
+| Parameter        | Type   | Description                                   |
+| ---------------- | ------ | --------------------------------------------- |
+| `region`         | array  | Comma-separated region IDs (level 3).         |
+| `regional_unit`  | array  | Comma-separated regional unit IDs (level 4).  |
+| `municipality`   | array  | Comma-separated municipality IDs (level 5).   |
+| `municipal_unit` | array  | Comma-separated municipal unit IDs (level 6). |
+| `neighborhood`   | array  | Comma-separated neighborhood IDs.             |
+| `country`        | string | Country name (e.g. `greece`).                 |
+| `address`        | string | Filter by address string.                     |
+
+#### Radius search
+
+Search properties within a circular area. All three parameters are required together.
+
+| Parameter   | Type   | Description                  |
+| ----------- | ------ | ---------------------------- |
+| `lat`       | number | Latitude of center point.    |
+| `lng`       | number | Longitude of center point.   |
+| `radius_km` | number | Search radius in kilometers. |
+
+#### Bounding box
+
+Filter by exact coordinate ranges.
+
+| Parameter       | Type   | Description        |
+| --------------- | ------ | ------------------ |
+| `latitude`      | number | Exact latitude.    |
+| `latitude_min`  | number | Minimum latitude.  |
+| `latitude_max`  | number | Maximum latitude.  |
+| `longitude`     | number | Exact longitude.   |
+| `longitude_min` | number | Minimum longitude. |
+| `longitude_max` | number | Maximum longitude. |
+
+#### Polygon / WKT
+
+For complex shape queries, pass a geometry directly.
+
+| Parameter | Type   | Description                                                          |
+| --------- | ------ | -------------------------------------------------------------------- |
+| `polygon` | string | Comma-separated `lng lat` pairs forming a closed polygon.            |
+| `wkt`     | string | WKT geometry string. Example: `POLYGON((23.7 37.9, 23.8 37.9, ...))` |
+
+---
+
+### Source
+
+| Parameter      | Type   | Description                                |
+| -------------- | ------ | ------------------------------------------ |
+| `source`       | string | Source platform (e.g. `spitogatos`, `xe`). |
+| `source_type`  | string | Source category (e.g. `broker`, `owner`).  |
+| `source_types` | array  | Multiple source types. Comma-separated.    |
+
+---
+
+### Status & data quality flags
+
+These boolean flags let you filter based on the property's processing state and data quality.
+
+| Parameter                    | Type    | Description                                                 |
+| ---------------------------- | ------- | ----------------------------------------------------------- |
+| `is_live`                    | boolean | Property is currently active on its source platform.        |
+| `is_public`                  | boolean | Property is publicly visible.                               |
+| `is_modified`                | boolean | Property data has been modified since first ingestion.      |
+| `is_manually_updated`        | boolean | A human has manually updated this property's data.          |
+| `is_ai_updated`              | boolean | AI has updated this property's data.                        |
+| `is_ai_processed`            | boolean | Property has been processed by the AI pipeline.             |
+| `is_ai_mismatched`           | boolean | AI found a discrepancy in this property's data.             |
+| `comparable`                 | boolean | Property is suitable for use as a comparable in valuations. |
+| `outlier`                    | boolean | Property is flagged as a statistical outlier.               |
+| `is_duplicated`              | boolean | Property is a duplicate of another record.                  |
+| `is_master_property`         | boolean | Property is the canonical record in a duplicate group.      |
+| `is_leader`                  | boolean | Property is the current active leader in a duplicate group. |
+| `is_deduplication_processed` | boolean | Deduplication has been run on this property.                |
+
+---
+
+### Tags
+
+| Parameter | Type  | Description                           |
+| --------- | ----- | ------------------------------------- |
+| `tags`    | array | Comma-separated tag IDs to filter by. |
+
+---
+
+### Dates
+
+All date filters accept ISO 8601 datetime strings (e.g. `2025-01-01T00:00:00Z`).
+
+| Parameter       | Description                                  |
+| --------------- | -------------------------------------------- |
+| `created_at`    | When the record was created in the database. |
+| `modified_at`   | When the record was last modified.           |
+| `first_seen_at` | When the property was first observed live.   |
+| `last_seen_at`  | When the property was last observed live.    |
+| `delisted_at`   | When the property was taken off market.      |
+
+---
+
+## Example requests
+
+**List sale apartments in Athens:**
+
+```bash
+curl -X GET "https://pandora.ask-wire.com/api/properties/?polymorphic_type=listing&listing_type=sale&property_type=apartment&municipality=1" \
+  -H "Authorization: Bearer YOUR_TOKEN"
+```
+
+**Radius search around a coordinate:**
+
+```bash
+curl -X GET "https://pandora.ask-wire.com/api/properties/?lat=37.9838&lng=23.7275&radius_km=5" \
+  -H "Authorization: Bearer YOUR_TOKEN"
+```
+
+**Only comparable, non-outlier properties with 3 bedrooms:**
+
+```bash
+curl -X GET "https://pandora.ask-wire.com/api/properties/?comparable=true&outlier=false&number_of_bedrooms=3" \
+  -H "Authorization: Bearer YOUR_TOKEN"
+```

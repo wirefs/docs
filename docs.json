@@ -21,7 +21,9 @@
             "group": "Endpoint examples",
             "pages": [
               "api-reference/endpoint/authentication",
-              "api-reference/endpoint/get"
+              "api-reference/endpoint/get",
+              "api-reference/endpoint/get-by-id",
+              "api-reference/endpoint/get-by-reference-id"
             ],
             "expanded": true
           }
