@@ -24,7 +24,8 @@
               "api-reference/endpoint/get",
               "api-reference/endpoint/get-by-id",
               "api-reference/endpoint/get-by-reference-id",
-              "api-reference/endpoint/regional-units"
+              "api-reference/endpoint/regional-units",
+              "api-reference/endpoint/municipalities"
             ],
             "expanded": true
           }
