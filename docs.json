@@ -28,11 +28,12 @@
             "expanded": true
           },
           {
-            "group": "Helpers",
+            "group": "Helpers & Dictionaries",
             "pages": [
               "api-reference/endpoint/regional-units",
               "api-reference/endpoint/municipalities"
-            ]
+            ],
+            "expanded": true
           }
         ]
       }
