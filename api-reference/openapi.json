@@ -662,6 +662,106 @@
         }
       }
     },
+    "/api/regional-units/": {
+      "get": {
+        "summary": "List regional units",
+        "description": "Returns a paginated list of regional units (level 4 in the geographic hierarchy).",
+        "operationId": "listRegionalUnits",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "A page number within the paginated result set.",
+            "schema": { "type": "integer" }
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "description": "Number of results to return per page.",
+            "schema": { "type": "integer" }
+          },
+          {
+            "name": "code",
+            "in": "query",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "country",
+            "in": "query",
+            "schema": { "type": "string", "enum": ["greece", "cyprus"] }
+          },
+          {
+            "name": "level",
+            "in": "query",
+            "schema": { "type": "integer" }
+          },
+          {
+            "name": "name_en",
+            "in": "query",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "name_gr",
+            "in": "query",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "parent_code",
+            "in": "query",
+            "description": "Multiple values may be separated by commas.",
+            "schema": { "type": "array", "items": { "type": "string" } },
+            "style": "form",
+            "explode": false
+          },
+          {
+            "name": "parent_id",
+            "in": "query",
+            "schema": { "type": "integer" }
+          },
+          {
+            "name": "created_at",
+            "in": "query",
+            "schema": { "type": "string", "format": "date-time" }
+          },
+          {
+            "name": "modified_at",
+            "in": "query",
+            "schema": { "type": "string", "format": "date-time" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated regional unit results",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedGeoEntityResponse"
+                },
+                "example": {
+                  "count": 123,
+                  "next": "http://api.example.org/accounts/?page=4",
+                  "previous": "http://api.example.org/accounts/?page=2",
+                  "results": [
+                    {
+                      "id": 0,
+                      "created_at": "2026-05-26T14:37:13.574Z",
+                      "modified_at": "2026-05-26T14:37:13.574Z",
+                      "country": "greece",
+                      "parent_id": 2147483647,
+                      "name_gr": "string",
+                      "name_en": "string",
+                      "level": 2147483647,
+                      "code": "string",
+                      "parent_code": "string"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/auth/otp/login": {
       "post": {
         "summary": "Login",
@@ -693,6 +793,18 @@
   },
   "components": {
     "schemas": {
+      "PaginatedGeoEntityResponse": {
+        "type": "object",
+        "properties": {
+          "count": { "type": "integer" },
+          "next": { "type": ["string", "null"], "format": "uri" },
+          "previous": { "type": ["string", "null"], "format": "uri" },
+          "results": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/GeoEntity" }
+          }
+        }
+      },
       "PaginatedPropertiesResponse": {
         "type": "object",
         "properties": {

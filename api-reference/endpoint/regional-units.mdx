@@ -1,0 +1,68 @@
+---
+title: "List regional units"
+description: "Returns a paginated list of regional units (level 4 in the geographic hierarchy)."
+openapi: "GET /api/regional-units/"
+---
+
+## Overview
+
+Regional units sit at level 4 in the Ask Wire geographic hierarchy: region (3) → **regional unit (4)** → municipality (5) → municipal unit (6) → neighborhood.
+
+Use this endpoint to discover regional unit IDs for filtering the [List properties](/api-reference/endpoint/get) endpoint via the `regional_unit` parameter.
+
+---
+
+## Query parameters
+
+### Pagination
+
+| Parameter   | Type    | Description                           |
+| ----------- | ------- | ------------------------------------- |
+| `page`      | integer | Page number within the result set.    |
+| `page_size` | integer | Number of results to return per page. |
+
+---
+
+### Filters
+
+| Parameter     | Type     | Description                                              |
+| ------------- | -------- | -------------------------------------------------------- |
+| `code`        | string   | Filter by the regional unit's short code.                |
+| `country`     | string   | Filter by country. Available values: `greece`, `cyprus`. |
+| `level`       | integer  | Filter by hierarchy level.                               |
+| `name_en`     | string   | Filter by English name.                                  |
+| `name_gr`     | string   | Filter by Greek name.                                    |
+| `parent_code` | array    | Filter by parent code. Multiple values comma-separated.  |
+| `parent_id`   | integer  | Filter by parent geographic unit ID.                     |
+| `created_at`  | datetime | Filter by creation date (ISO 8601).                      |
+| `modified_at` | datetime | Filter by last modified date (ISO 8601).                 |
+
+---
+
+## Response fields
+
+### Pagination wrapper
+
+| Field      | Type           | Description                                      |
+| ---------- | -------------- | ------------------------------------------------ |
+| `count`    | integer        | Total number of results across all pages.        |
+| `next`     | string \| null | URL of the next page, or `null` if on last page. |
+| `previous` | string \| null | URL of the previous page, or `null` if on first. |
+| `results`  | array          | Array of regional unit objects.                  |
+
+---
+
+### Regional unit object
+
+| Field         | Type     | Description                                               |
+| ------------- | -------- | --------------------------------------------------------- |
+| `id`          | integer  | Unique ID.                                                |
+| `name_en`     | string   | Name in English.                                          |
+| `name_gr`     | string   | Name in Greek.                                            |
+| `code`        | string   | Short code for this regional unit.                        |
+| `parent_code` | string   | Code of the parent region.                                |
+| `parent_id`   | integer  | ID of the parent region.                                  |
+| `level`       | integer  | Level in the geographic hierarchy (4 for regional units). |
+| `country`     | string   | Country this unit belongs to (e.g. `greece`, `cyprus`).   |
+| `created_at`  | datetime | When this record was created.                             |
+| `modified_at` | datetime | When this record was last modified.                       |
