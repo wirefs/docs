@@ -890,9 +890,10 @@
         }
       }
     },
-     "/api/points-of-interest/": {
+    "/api/points-of-interest/": {
       "post": {
         "summary": "List points of interest near a coordinate",
+        "servers": [{ "url": "https://pandora.ask-wire.com" }],
         "description": "Returns nearby points of interest (POIs) for an arbitrary latitude/longitude pair, using the same selection logic as the Marketability Report neighbourhood section: up to 16 POIs, at most 3 per place type, with per-category search radii (airport 10 km; metro, tram, train and future metro 2 km; everything else 1 km), ordered nearest-first. Although the operation is a read with no side effects, coordinates are passed in a JSON request body, so the endpoint uses POST. The route requires the trailing slash — a redirected slashless POST can drop its body in some clients.",
         "operationId": "listPointsOfInterest",
         "requestBody": {
@@ -1085,16 +1086,8 @@
           "error": { "type": "integer" },
           "message": { "type": "string" }
         }
-      }
-    },
-    "securitySchemes": {
-      "bearerAuth": {
-        "type": "http",
-        "scheme": "bearer",
-        "bearerFormat": "JWT"
-      }
-    },
-    "PointOfInterestRequest": {
+      },
+      "PointOfInterestRequest": {
         "type": "object",
         "required": ["latitude", "longitude"],
         "properties": {
@@ -1179,5 +1172,13 @@
           }
         }
       }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
   }
 }

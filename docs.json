@@ -18,14 +18,22 @@
             "pages": ["api-reference/introduction"]
           },
           {
-            "group": "Endpoint examples",
+            "group": "Authentication",
+            "pages": ["api-reference/endpoint/authentication"],
+            "expanded": true
+          },
+          {
+            "group": "Properties & Listings",
             "pages": [
-              "api-reference/endpoint/authentication",
               "api-reference/endpoint/get",
               "api-reference/endpoint/get-by-id",
-              "api-reference/endpoint/get-by-reference-id",
-              "api-reference/endpoint/points-of-interest"
+              "api-reference/endpoint/get-by-reference-id"
             ],
+            "expanded": true
+          },
+          {
+            "group": "Points of Interest",
+            "pages": ["api-reference/endpoint/points-of-interest"],
             "expanded": true
           },
           {
