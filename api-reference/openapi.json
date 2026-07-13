@@ -889,6 +889,62 @@
           "200": { "description": "OK" }
         }
       }
+    },
+    "/api/points-of-interest/": {
+      "post": {
+        "summary": "List points of interest near a coordinate",
+        "servers": [{ "url": "https://pandora.ask-wire.com" }],
+        "description": "Returns nearby points of interest (POIs) for an arbitrary latitude/longitude pair, using the same selection logic as the Marketability Report neighbourhood section: up to 16 POIs, at most 3 per place type, with per-category search radii (airport 10 km; metro, tram, train and future metro 2 km; everything else 1 km), ordered nearest-first. Although the operation is a read with no side effects, coordinates are passed in a JSON request body, so the endpoint uses POST. The route requires the trailing slash — a redirected slashless POST can drop its body in some clients.",
+        "operationId": "listPointsOfInterest",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PointOfInterestRequest"
+              },
+              "example": { "latitude": 40.712776, "longitude": -74.005974 }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Points of interest near the queried coordinate, ordered nearest-first. An empty array means nothing is within range — not an error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/PointOfInterest" }
+                },
+                "example": [
+                  {
+                    "id": 12,
+                    "external_id": "osm-98421",
+                    "name_en": "Central Primary School",
+                    "name_gr": "Κεντρικό Δημοτικό Σχολείο",
+                    "place_category": "Education",
+                    "place_type": "primary_school",
+                    "latitude": 40.7128,
+                    "longitude": -74.0061,
+                    "distance": 45.2
+                  }
+                ]
+              }
+            }
+          },
+          "400": {
+            "description": "Missing `latitude`/`longitude`, out-of-range value, or non-numeric value.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid JWT."
+          }
+        }
+      }
     }
   },
   "components": {
@@ -1029,6 +1085,91 @@
         "properties": {
           "error": { "type": "integer" },
           "message": { "type": "string" }
+        }
+      },
+      "PointOfInterestRequest": {
+        "type": "object",
+        "required": ["latitude", "longitude"],
+        "properties": {
+          "latitude": {
+            "type": "number",
+            "minimum": -90,
+            "maximum": 90,
+            "description": "Latitude to search around.",
+            "example": 40.712776
+          },
+          "longitude": {
+            "type": "number",
+            "minimum": -180,
+            "maximum": 180,
+            "description": "Longitude to search around.",
+            "example": -74.005974
+          }
+        }
+      },
+      "PointOfInterest": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "description": "POI identifier." },
+          "external_id": {
+            "type": ["string", "null"],
+            "description": "Identifier from the source dataset."
+          },
+          "name_en": {
+            "type": ["string", "null"],
+            "description": "English name."
+          },
+          "name_gr": {
+            "type": ["string", "null"],
+            "description": "Greek name."
+          },
+          "place_category": {
+            "type": ["string", "null"],
+            "description": "Source-provided category label."
+          },
+          "place_type": {
+            "type": "string",
+            "description": "POI type.",
+            "enum": [
+              "airport",
+              "bank",
+              "bus_stop",
+              "bus_station",
+              "metro_station",
+              "future_metro_station",
+              "tram_station",
+              "elementary_school",
+              "high_school",
+              "primary_school",
+              "kindergarden",
+              "hospital",
+              "clinic",
+              "park",
+              "playground",
+              "fuel_station",
+              "sports",
+              "church",
+              "police",
+              "post_office",
+              "shopping_mall",
+              "train_station",
+              "university",
+              "city_hall",
+              "supermarket"
+            ]
+          },
+          "latitude": {
+            "type": ["number", "null"],
+            "description": "POI latitude."
+          },
+          "longitude": {
+            "type": ["number", "null"],
+            "description": "POI longitude."
+          },
+          "distance": {
+            "type": ["number", "null"],
+            "description": "Distance from the queried point, in metres, rounded to 2 decimals."
+          }
         }
       }
     },
