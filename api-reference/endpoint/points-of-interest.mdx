@@ -1,0 +1,107 @@
+---
+title: "List points of interest"
+description: "Returns nearby points of interest (POIs) for an arbitrary latitude/longitude pair."
+openapi: "POST /api/points-of-interest/"
+---
+
+## Overview
+
+This endpoint returns the neighbourhood points of interest for any coordinate pair, using the exact same selection logic as the Marketability Report — so an ad-hoc lookup and a report's neighbourhood section always return the same POIs for the same coordinates.
+
+Although the operation is a read with no side effects, the coordinates are passed in a **JSON request body**, which is why the endpoint uses `POST` rather than `GET`.
+
+<Note>
+  The route requires the trailing slash (`/api/points-of-interest/`). A
+  redirected slashless `POST` can drop its request body in some clients.
+</Note>
+
+---
+
+## Request body
+
+Send a JSON object with both coordinates:
+
+```json
+{ "latitude": 40.712776, "longitude": -74.005974 }
+```
+
+| Field       | Type   | Required | Constraints          | Description                  |
+| ----------- | ------ | -------- | -------------------- | ---------------------------- |
+| `latitude`  | number | Yes      | `-90` ≤ value ≤ `90`   | Latitude to search around.   |
+| `longitude` | number | Yes      | `-180` ≤ value ≤ `180` | Longitude to search around.  |
+
+Coordinates may be sent as JSON numbers, integers, or numeric strings — all are coerced to floats. Trailing zeros are irrelevant (`40.7120` and `40.712` are the same value).
+
+---
+
+## Selection logic
+
+Each POI category is searched within its own radius around the queried point:
+
+| Category                             | Search radius |
+| ------------------------------------ | ------------- |
+| Airport                              | 10 000 m      |
+| Metro / Future metro / Tram / Train  | 2 000 m       |
+| All other place types                | 1 000 m       |
+
+Results are ordered nearest-first, capped at **3 per place type** and **16 total**. These limits are fixed and cannot be tuned per request.
+
+---
+
+## Response fields
+
+The response is a JSON array of POI objects (an empty array `[]` when nothing is within range — this is not an error condition).
+
+| Field            | Type           | Description                                                        |
+| ---------------- | -------------- | ------------------------------------------------------------------ |
+| `id`             | integer        | POI identifier.                                                    |
+| `external_id`    | string \| null | Identifier from the source dataset.                                |
+| `name_en`        | string \| null | English name.                                                      |
+| `name_gr`        | string \| null | Greek name.                                                        |
+| `place_category` | string \| null | Source-provided category label.                                    |
+| `place_type`     | string         | POI type (see values below).                                       |
+| `latitude`       | number \| null | POI latitude.                                                      |
+| `longitude`      | number \| null | POI longitude.                                                     |
+| `distance`       | number \| null | Distance from the queried point, in **metres**, rounded to 2 decimals. |
+
+### `place_type` values
+
+`airport`, `bank`, `bus_stop`, `bus_station`, `metro_station`, `future_metro_station`, `tram_station`, `elementary_school`, `high_school`, `primary_school`, `kindergarden`, `hospital`, `clinic`, `park`, `playground`, `fuel_station`, `sports`, `church`, `police`, `post_office`, `shopping_mall`, `train_station`, `university`, `city_hall`, `supermarket`
+
+---
+
+## Errors
+
+| Status             | When                                                                    |
+| ------------------ | ----------------------------------------------------------------------- |
+| `400 Bad Request`  | Missing `latitude`/`longitude`, out-of-range value, or non-numeric value. |
+| `401 Unauthorized` | Missing or invalid JWT.                                                 |
+
+---
+
+## Example request
+
+```bash
+curl -X POST "https://pandora.ask-wire.com/api/points-of-interest/" \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"latitude": 40.712776, "longitude": -74.005974}'
+```
+
+**Example response:**
+
+```json
+[
+  {
+    "id": 12,
+    "external_id": "osm-98421",
+    "name_en": "Central Primary School",
+    "name_gr": "Κεντρικό Δημοτικό Σχολείο",
+    "place_category": "Education",
+    "place_type": "primary_school",
+    "latitude": 40.7128,
+    "longitude": -74.0061,
+    "distance": 45.2
+  }
+]
+```
