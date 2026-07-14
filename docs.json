@@ -15,11 +15,15 @@
         "groups": [
           {
             "group": "API documentation",
-            "pages": ["api-reference/introduction"]
+            "pages": [
+              "api-reference/introduction"
+            ]
           },
           {
             "group": "Authentication",
-            "pages": ["api-reference/endpoint/authentication"],
+            "pages": [
+              "api-reference/endpoint/authentication"
+            ],
             "expanded": true
           },
           {
@@ -33,7 +37,9 @@
           },
           {
             "group": "Points of Interest",
-            "pages": ["api-reference/endpoint/points-of-interest"],
+            "pages": [
+              "api-reference/endpoint/points-of-interest"
+            ],
             "expanded": true
           },
           {

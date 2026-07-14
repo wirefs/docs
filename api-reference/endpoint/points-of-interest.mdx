@@ -22,13 +22,13 @@ Although the operation is a read with no side effects, the coordinates are passe
 Send a JSON object with both coordinates:
 
 ```json
-{ "latitude": 40.712776, "longitude": -74.005974 }
+{ "latitude": 37.9797085, "longitude": 23.75967373 }
 ```
 
-| Field       | Type   | Required | Constraints          | Description                  |
-| ----------- | ------ | -------- | -------------------- | ---------------------------- |
-| `latitude`  | number | Yes      | `-90` ≤ value ≤ `90`   | Latitude to search around.   |
-| `longitude` | number | Yes      | `-180` ≤ value ≤ `180` | Longitude to search around.  |
+| Field       | Type   | Required | Constraints            | Description                 |
+| ----------- | ------ | -------- | ---------------------- | --------------------------- |
+| `latitude`  | number | Yes      | `-90` ≤ value ≤ `90`   | Latitude to search around.  |
+| `longitude` | number | Yes      | `-180` ≤ value ≤ `180` | Longitude to search around. |
 
 Coordinates may be sent as JSON numbers, integers, or numeric strings — all are coerced to floats. Trailing zeros are irrelevant (`40.7120` and `40.712` are the same value).
 
@@ -38,11 +38,11 @@ Coordinates may be sent as JSON numbers, integers, or numeric strings — all ar
 
 Each POI category is searched within its own radius around the queried point:
 
-| Category                             | Search radius |
-| ------------------------------------ | ------------- |
-| Airport                              | 10 000 m      |
-| Metro / Future metro / Tram / Train  | 2 000 m       |
-| All other place types                | 1 000 m       |
+| Category                            | Search radius |
+| ----------------------------------- | ------------- |
+| Airport                             | 10 000 m      |
+| Metro / Future metro / Tram / Train | 2 000 m       |
+| All other place types               | 1 000 m       |
 
 Results are ordered nearest-first, capped at **3 per place type** and **16 total**. These limits are fixed and cannot be tuned per request.
 
@@ -52,16 +52,16 @@ Results are ordered nearest-first, capped at **3 per place type** and **16 total
 
 The response is a JSON array of POI objects (an empty array `[]` when nothing is within range — this is not an error condition).
 
-| Field            | Type           | Description                                                        |
-| ---------------- | -------------- | ------------------------------------------------------------------ |
-| `id`             | integer        | POI identifier.                                                    |
-| `external_id`    | string \| null | Identifier from the source dataset.                                |
-| `name_en`        | string \| null | English name.                                                      |
-| `name_gr`        | string \| null | Greek name.                                                        |
-| `place_category` | string \| null | Source-provided category label.                                    |
-| `place_type`     | string         | POI type (see values below).                                       |
-| `latitude`       | number \| null | POI latitude.                                                      |
-| `longitude`      | number \| null | POI longitude.                                                     |
+| Field            | Type           | Description                                                            |
+| ---------------- | -------------- | ---------------------------------------------------------------------- |
+| `id`             | integer        | POI identifier.                                                        |
+| `external_id`    | string \| null | Identifier from the source dataset.                                    |
+| `name_en`        | string \| null | English name.                                                          |
+| `name_gr`        | string \| null | Greek name.                                                            |
+| `place_category` | string \| null | Source-provided category label.                                        |
+| `place_type`     | string         | POI type (see values below).                                           |
+| `latitude`       | number \| null | POI latitude.                                                          |
+| `longitude`      | number \| null | POI longitude.                                                         |
 | `distance`       | number \| null | Distance from the queried point, in **metres**, rounded to 2 decimals. |
 
 ### `place_type` values
@@ -72,10 +72,10 @@ The response is a JSON array of POI objects (an empty array `[]` when nothing is
 
 ## Errors
 
-| Status             | When                                                                    |
-| ------------------ | ----------------------------------------------------------------------- |
+| Status             | When                                                                      |
+| ------------------ | ------------------------------------------------------------------------- |
 | `400 Bad Request`  | Missing `latitude`/`longitude`, out-of-range value, or non-numeric value. |
-| `401 Unauthorized` | Missing or invalid JWT.                                                 |
+| `401 Unauthorized` | Missing or invalid JWT.                                                   |
 
 ---
 
@@ -85,7 +85,7 @@ The response is a JSON array of POI objects (an empty array `[]` when nothing is
 curl -X POST "https://pandora.ask-wire.com/api/points-of-interest/" \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"latitude": 40.712776, "longitude": -74.005974}'
+  -d '{ "latitude": 37.9797085, "longitude": 23.75967373}'
 ```
 
 **Example response:**
@@ -93,15 +93,180 @@ curl -X POST "https://pandora.ask-wire.com/api/points-of-interest/" \
 ```json
 [
   {
-    "id": 12,
-    "external_id": "osm-98421",
-    "name_en": "Central Primary School",
-    "name_gr": "Κεντρικό Δημοτικό Σχολείο",
+    "id": 61086,
+    "external_id": "w1155869110",
+    "name_en": "Park",
+    "name_gr": "Πάρκο",
+    "place_category": "Park",
+    "place_type": "park",
+    "latitude": 37.9797085,
+    "longitude": 23.75967373,
+    "distance": 0.0
+  },
+  {
+    "id": 65625,
+    "external_id": "n2330727927",
+    "name_en": "Sklavenitis",
+    "name_gr": "Σκλαβενίτης",
+    "place_category": "Supermarket",
+    "place_type": "supermarket",
+    "latitude": 37.9802376,
+    "longitude": 23.7587177,
+    "distance": 102.38
+  },
+  {
+    "id": 64921,
+    "external_id": "n5197500021",
+    "name_en": "Lidl",
+    "name_gr": "Lidl",
+    "place_category": "Supermarket",
+    "place_type": "supermarket",
+    "latitude": 37.9798503,
+    "longitude": 23.7608444,
+    "distance": 103.81
+  },
+  {
+    "id": 48106,
+    "external_id": "n4384306110",
+    "name_en": "REVOIL",
+    "name_gr": "REVOIL",
+    "place_category": "Energy",
+    "place_type": "fuel_station",
+    "latitude": 37.9810814,
+    "longitude": 23.7596605,
+    "distance": 152.66
+  },
+  {
+    "id": 26129,
+    "external_id": "11759",
+    "name_en": "EYDAP",
+    "name_gr": "ΕΥΔΑΠ",
+    "place_category": "Transportation",
+    "place_type": "bus_stop",
+    "latitude": 37.9787034,
+    "longitude": 23.7581591,
+    "distance": 173.53
+  },
+  {
+    "id": 64524,
+    "external_id": "n7181693185",
+    "name_en": "My Market",
+    "name_gr": "My Market",
+    "place_category": "Supermarket",
+    "place_type": "supermarket",
+    "latitude": 37.9796253,
+    "longitude": 23.7616994,
+    "distance": 177.79
+  },
+  {
+    "id": 45860,
+    "external_id": "w661525262",
+    "name_en": "AVIN",
+    "name_gr": "AVIN",
+    "place_category": "Energy",
+    "place_type": "fuel_station",
+    "latitude": 37.98126315,
+    "longitude": 23.7587619,
+    "distance": 190.45
+  },
+  {
+    "id": 50418,
+    "external_id": "n3439694902",
+    "name_en": "ETEKA",
+    "name_gr": "ΕΤΕΚΑ",
+    "place_category": "Energy",
+    "place_type": "fuel_station",
+    "latitude": 37.9806927,
+    "longitude": 23.7576414,
+    "distance": 209.06
+  },
+  {
+    "id": 24826,
+    "external_id": "n6193520910",
+    "name_en": "National Bank of Greece",
+    "name_gr": "Εθνική Τράπεζα της Ελλάδος",
+    "place_category": "Bank",
+    "place_type": "bank",
+    "latitude": 37.9811669,
+    "longitude": 23.7578501,
+    "distance": 227.7
+  },
+  {
+    "id": 51106,
+    "external_id": "n2830767495",
+    "name_en": "Prolipsis",
+    "name_gr": "Πρόληψις",
+    "place_category": "Medical",
+    "place_type": "clinic",
+    "latitude": 37.9805322,
+    "longitude": 23.7569626,
+    "distance": 254.66
+  },
+  {
+    "id": 74634,
+    "external_id": "1014140",
+    "name_en": "6th Day Epal Athinon",
+    "name_gr": "6ο Ημερήσιο Επα. Λ. Αθηνών",
     "place_category": "Education",
-    "place_type": "primary_school",
-    "latitude": 40.7128,
-    "longitude": -74.0061,
-    "distance": 45.2
+    "place_type": "high_school",
+    "latitude": 37.981939,
+    "longitude": 23.758828,
+    "distance": 258.86
+  },
+  {
+    "id": 51145,
+    "external_id": "n4394190110",
+    "name_en": "New Medicine",
+    "name_gr": "Νέα Ιατρική",
+    "place_category": "Medical",
+    "place_type": "clinic",
+    "latitude": 37.9799343,
+    "longitude": 23.7627978,
+    "distance": 274.96
+  },
+  {
+    "id": 74898,
+    "external_id": "1000343",
+    "name_en": "7th Evening Epa.L Athinon",
+    "name_gr": "7ο Εσπερινό Επα. Λ Αθηνών",
+    "place_category": "Education",
+    "place_type": "high_school",
+    "latitude": 37.982125,
+    "longitude": 23.758742,
+    "distance": 280.84
+  },
+  {
+    "id": 59921,
+    "external_id": "w790360242",
+    "name_en": "Park",
+    "name_gr": "Πάρκο",
+    "place_category": "Park",
+    "place_type": "park",
+    "latitude": 37.9806993,
+    "longitude": 23.75644097,
+    "distance": 304.01
+  },
+  {
+    "id": 27341,
+    "external_id": "60924",
+    "name_en": "1st Ilision",
+    "name_gr": "1η Ιλισίων",
+    "place_category": "Transportation",
+    "place_type": "bus_stop",
+    "latitude": 37.9780679,
+    "longitude": 23.7565904,
+    "distance": 326.06
+  },
+  {
+    "id": 50677,
+    "external_id": "n4464612064",
+    "name_en": "General Hospital \"Alexandra\" (Outpatient Clinics)",
+    "name_gr": "Γεν. Νοσ. \"Αλεξάνδρα\" (Εξωτερικά Ιατρεία)",
+    "place_category": "Medical",
+    "place_type": "hospital",
+    "latitude": 37.9810314,
+    "longitude": 23.7562692,
+    "distance": 332.68
   }
 ]
 ```
