@@ -1,0 +1,42 @@
+---
+title: "Query GIS layer properties"
+description: "Query a GIS layer at a given latitude/longitude and return the layer-specific properties."
+openapi: "GET /api/gis/"
+---
+
+## Overview
+
+Queries the Greece parcels worker for a given GIS layer at a latitude/longitude coordinate and returns the layer-specific properties. The response shape varies by layer.
+
+Authentication is not enforced at the schema level, but a valid Bearer token is recommended for production integrations.
+
+---
+
+## Query parameters
+
+| Parameter   | Type   | Required | Description                                        |
+| ----------- | ------ | -------- | -------------------------------------------------- |
+| `latitude`  | number | Yes      | Latitude of the location.                          |
+| `longitude` | number | Yes      | Longitude of the location.                         |
+| `layer`     | string | Yes      | GIS layer type. One of: `apaa`, `crime`, `parcel`. |
+
+---
+
+## Response
+
+Returns a JSON object with layer-specific properties. The exact shape varies depending on the `layer` value requested.
+
+| Status | Description                                             |
+| ------ | ------------------------------------------------------- |
+| `200`  | Layer-specific properties for the given location.       |
+| `400`  | Invalid or missing `latitude`, `longitude`, or `layer`. |
+| `500`  | Error connecting to the GIS API.                        |
+
+---
+
+## Example request
+
+```bash
+curl -X GET "https://pandora.ask-wire.com/api/gis/?latitude=38.0&longitude=23.7&layer=parcel" \
+  -H "Authorization: Bearer YOUR_TOKEN"
+```

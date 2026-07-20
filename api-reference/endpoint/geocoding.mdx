@@ -1,0 +1,40 @@
+---
+title: "Geocode an address"
+description: "Fetch coordinates and address match information for a given address string."
+openapi: "GET /api/geocoding/geocode/"
+---
+
+## Overview
+
+Returns geocoding information for a given address — coordinates, match type, and a normalized address string. Optionally fetches KAEK (cadastral parcel) information alongside the geocoding result.
+
+Authentication is not enforced at the schema level, but a valid Bearer token is recommended for production integrations.
+
+---
+
+## Query parameters
+
+| Parameter | Type    | Required | Description                             |
+| --------- | ------- | -------- | --------------------------------------- |
+| `address` | string  | Yes      | Address to geocode. Max 255 characters. |
+| `kaek`    | boolean | No       | Also fetch KAEK (parcel) information.   |
+
+---
+
+## Response fields
+
+| Field               | Type   | Description                          |
+| ------------------- | ------ | ------------------------------------ |
+| `latitude`          | number | Latitude of the matched location.    |
+| `longitude`         | number | Longitude of the matched location.   |
+| `location_type`     | string | Type of the match (e.g. `ROOFTOP`).  |
+| `formatted_address` | string | Normalized/formatted address string. |
+
+---
+
+## Example request
+
+```bash
+curl -X GET "https://pandora.ask-wire.com/api/geocoding/geocode/?address=25%20Stasinou%20Ave%2C%20Nicosia&kaek=true" \
+  -H "Authorization: Bearer YOUR_TOKEN"
+```

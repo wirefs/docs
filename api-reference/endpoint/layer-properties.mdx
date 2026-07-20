@@ -1,0 +1,36 @@
+---
+title: "Query layer properties"
+description: "Retrieve properties from geographic and environmental layers for a given location."
+openapi: "GET /api/layer-properties/"
+---
+
+## Overview
+
+Returns properties from a broader set of geographic and environmental layers for a given coordinate. Primarily covers Cyprus-focused layers including floods, seismic zones, and wildfire risk.
+
+Authentication is not enforced at the schema level, but a valid Bearer token is recommended for production integrations.
+
+---
+
+## Query parameters
+
+| Parameter   | Type   | Required | Description                                                                                         |
+| ----------- | ------ | -------- | --------------------------------------------------------------------------------------------------- |
+| `latitude`  | number | Yes      | Latitude of the location.                                                                           |
+| `longitude` | number | Yes      | Longitude of the location.                                                                          |
+| `layer`     | string | Yes      | Layer type. One of: `building_blocks`, `country`, `floods`, `parcels`, `seismic_zones`, `wildfire`. |
+
+---
+
+## Response
+
+Returns layer data for the given location. Contact the Ask Wire team to confirm the expected payload shape for each layer before integrating.
+
+---
+
+## Example request
+
+```bash
+curl -X GET "https://pandora.ask-wire.com/api/layer-properties/?latitude=35.17&longitude=33.36&layer=floods" \
+  -H "Authorization: Bearer YOUR_TOKEN"
+```

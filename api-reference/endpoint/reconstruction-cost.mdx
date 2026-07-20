@@ -1,0 +1,62 @@
+---
+title: "Calculate reconstruction cost"
+description: "Calculate the as-new reconstruction cost of a property. Optionally returns the as-is (depreciated) value when a construction year is provided."
+openapi: "GET /api/reconstruction-cost/"
+---
+
+## Overview
+
+Calculates the as-new reconstruction cost of a property based on its postal-code prefix, property type, and build area. When a construction year is supplied, the response also includes the as-is (depreciated) value.
+
+Only the first two digits of the postal code are used for the cost lookup.
+
+Authentication is not enforced at the schema level, but a valid Bearer token is recommended for production integrations.
+
+---
+
+## Query parameters
+
+| Parameter           | Type    | Required | Description                                                                                   |
+|---------------------|---------|----------|-----------------------------------------------------------------------------------------------|
+| `postal_code`       | string  | Yes      | Full postal code. Only the first two digits are used. Must be numeric, at least two digits.   |
+| `property_type`     | string  | Yes      | Property type. One of: `apartment`, `house`, `maisonette`.                                    |
+| `build_area`        | number  | Yes      | Build area in m². Must be greater than 0.                                                     |
+| `construction_year` | integer | No       | Construction year. When provided, the as-is value is also returned. Cannot be in the future.  |
+
+---
+
+## Response fields
+
+| Field                          | Type   | Description                                                                      |
+|--------------------------------|--------|----------------------------------------------------------------------------------|
+| `reconstruction_cost.as_new`   | number | As-new reconstruction cost. Always returned.                                     |
+| `reconstruction_cost.as_is`    | number | As-is (depreciated) value. Only present when `construction_year` was supplied.   |
+
+---
+
+## Error responses
+
+| Status | Description                                                                              |
+|--------|------------------------------------------------------------------------------------------|
+| `400`  | Invalid input parameters.                                                                |
+| `422`  | No reconstruction cost mapping exists for the given postal-code prefix and property type.|
+
+---
+
+## Example request
+
+```bash
+curl -X GET "https://pandora.ask-wire.com/api/reconstruction-cost/?postal_code=1010&property_type=apartment&build_area=95&construction_year=2005" \
+  -H "Authorization: Bearer YOUR_TOKEN"
+```
+
+## Example response
+
+```json
+{
+  "reconstruction_cost": {
+    "as_new": 145000.0,
+    "as_is": 112000.0
+  }
+}
+```

@@ -1,0 +1,43 @@
+---
+title: "Query Census 2021"
+description: "Retrieve a Census 2021 record for a specific building, identified by geographical code and building block."
+openapi: "GET /api/census2021/{dataset}"
+---
+
+## Overview
+
+Returns Census 2021 data for a building identified by its geographical code and building block number. The response is a flat JSON object containing every field of the matched record — the exact shape depends on the requested dataset.
+
+Authentication is not enforced at the schema level, but a valid Bearer token is recommended for production integrations.
+
+---
+
+## Path parameters
+
+| Parameter | Type   | Required | Description                                                                               |
+| --------- | ------ | -------- | ----------------------------------------------------------------------------------------- |
+| `dataset` | string | Yes      | Census 2021 dataset to query. Currently only `building_and_characteristics` is supported. |
+
+---
+
+## Query parameters
+
+| Parameter           | Type   | Required | Description                                                         |
+| ------------------- | ------ | -------- | ------------------------------------------------------------------- |
+| `geographical_code` | string | Yes      | Geographical code identifying the area (e.g. quarter/village code). |
+| `building_block`    | string | Yes      | Building block number within the geographical area.                 |
+
+---
+
+## Response
+
+Returns a flat JSON object. Every field of the matched Census 2021 record is included. The exact fields depend on the requested dataset.
+
+---
+
+## Example request
+
+```bash
+curl -X GET "https://pandora.ask-wire.com/api/census2021/building_and_characteristics?geographical_code=0123&building_block=045" \
+  -H "Authorization: Bearer YOUR_TOKEN"
+```

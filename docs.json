@@ -36,6 +36,36 @@
             "expanded": true
           },
           {
+            "group": "Geocoding",
+            "pages": [
+              "api-reference/endpoint/geocoding",
+              "api-reference/endpoint/kaek-search"
+            ],
+            "expanded": true
+          },
+          {
+            "group": "GIS & Layers",
+            "pages": [
+              "api-reference/endpoint/gis",
+              "api-reference/endpoint/layer-properties"
+            ],
+            "expanded": true
+          },
+          {
+            "group": "Valuation",
+            "pages": [
+              "api-reference/endpoint/reconstruction-cost"
+            ],
+            "expanded": true
+          },
+          {
+            "group": "Census",
+            "pages": [
+              "api-reference/endpoint/census2021"
+            ],
+            "expanded": true
+          },
+          {
             "group": "Points of Interest",
             "pages": [
               "api-reference/endpoint/points-of-interest"

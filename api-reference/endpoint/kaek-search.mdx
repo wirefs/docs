@@ -1,0 +1,38 @@
+---
+title: "Search a parcel by KAEK"
+description: "Search for a parcel using its KAEK (cadastral) code."
+openapi: "GET /api/geocoding/kaek-search/"
+---
+
+## Overview
+
+Returns parcel information for a given KAEK (cadastral) code, including the parcel area and geometry.
+
+Authentication is not enforced at the schema level, but a valid Bearer token is recommended for production integrations.
+
+---
+
+## Query parameters
+
+| Parameter   | Type   | Required | Description                |
+| ----------- | ------ | -------- | -------------------------- |
+| `kaek_code` | string | Yes      | KAEK number to search for. |
+
+---
+
+## Response fields
+
+| Field      | Type   | Description                                |
+| ---------- | ------ | ------------------------------------------ |
+| `kaek`     | string | The KAEK code.                             |
+| `area`     | number | Parcel area.                               |
+| `geometry` | string | Parcel geometry (e.g. WKT/GeoJSON string). |
+
+---
+
+## Example request
+
+```bash
+curl -X GET "https://pandora.ask-wire.com/api/geocoding/kaek-search/?kaek_code=123456789" \
+  -H "Authorization: Bearer YOUR_TOKEN"
+```

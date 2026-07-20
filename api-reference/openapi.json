@@ -1158,6 +1158,337 @@
         }
       }
     },
+    "/api/geocoding/geocode/": {
+      "get": {
+        "summary": "Geocode an address",
+        "description": "Fetches geocoding information (coordinates, address match type) for a given address. Authentication is not enforced at the schema level but a valid Bearer token is recommended for production integrations.",
+        "operationId": "geocodeAddress",
+        "security": [],
+        "parameters": [
+          {
+            "name": "address",
+            "in": "query",
+            "required": true,
+            "description": "Address to geocode. Max 255 characters.",
+            "schema": {
+              "type": "string",
+              "maxLength": 255
+            }
+          },
+          {
+            "name": "kaek",
+            "in": "query",
+            "required": false,
+            "description": "Whether to also fetch KAEK (parcel) information.",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Geocoding result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GeocodingData"
+                },
+                "example": {
+                  "latitude": 37.9838,
+                  "longitude": 23.7275,
+                  "location_type": "ROOFTOP",
+                  "formatted_address": "25 Stasinou Ave, Nicosia"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/geocoding/kaek-search/": {
+      "get": {
+        "summary": "Search a parcel by KAEK code",
+        "description": "Searches for a parcel using its KAEK (cadastral) code. Authentication is not enforced at the schema level but a valid Bearer token is recommended for production integrations.",
+        "operationId": "kaekSearch",
+        "security": [],
+        "parameters": [
+          {
+            "name": "kaek_code",
+            "in": "query",
+            "required": true,
+            "description": "KAEK number to search for.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "KAEK parcel result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KAEKSearchResponse"
+                },
+                "example": {
+                  "kaek": "123456789",
+                  "area": 250.5,
+                  "geometry": "POLYGON((23.7 37.9, ...))"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/census2021/{dataset}": {
+      "get": {
+        "summary": "Query Census 2021",
+        "description": "Retrieves a Census 2021 record for a specific building, identified by geographical code and building block. Authentication is not enforced at the schema level but a valid Bearer token is recommended for production integrations.",
+        "operationId": "getCensus2021",
+        "security": [],
+        "parameters": [
+          {
+            "name": "dataset",
+            "in": "path",
+            "required": true,
+            "description": "Census 2021 dataset to query. Currently only `building_and_characteristics` is supported.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "building_and_characteristics"
+              ]
+            }
+          },
+          {
+            "name": "geographical_code",
+            "in": "query",
+            "required": true,
+            "description": "Geographical code identifying the area (e.g. quarter/village code).",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "building_block",
+            "in": "query",
+            "required": true,
+            "description": "Building block number within the geographical area.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Every field of the matched record is returned as a flat JSON object. Response shape depends on the requested dataset.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/gis/": {
+      "get": {
+        "summary": "Query GIS layer properties",
+        "description": "Queries the Greece parcels worker for a given GIS layer at a latitude/longitude and returns the layer-specific properties. Authentication is not enforced at the schema level but a valid Bearer token is recommended for production integrations.",
+        "operationId": "getGISLayerProperties",
+        "security": [],
+        "parameters": [
+          {
+            "name": "latitude",
+            "in": "query",
+            "required": true,
+            "description": "Latitude of the location.",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "longitude",
+            "in": "query",
+            "required": true,
+            "description": "Longitude of the location.",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "layer",
+            "in": "query",
+            "required": true,
+            "description": "GIS layer type.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "apaa",
+                "crime",
+                "parcel"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Layer-specific properties for the given location. Shape varies by layer.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid or missing latitude / longitude / layer."
+          },
+          "500": {
+            "description": "Error connecting to the GIS API."
+          }
+        }
+      }
+    },
+    "/api/layer-properties/": {
+      "get": {
+        "summary": "Query layer properties",
+        "description": "Retrieves properties from a broader set of geographic/environmental layers for a given location. Cyprus-focused layers. Authentication is not enforced at the schema level but a valid Bearer token is recommended for production integrations.",
+        "operationId": "getLayerProperties",
+        "security": [],
+        "parameters": [
+          {
+            "name": "latitude",
+            "in": "query",
+            "required": true,
+            "description": "Latitude of the location.",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "longitude",
+            "in": "query",
+            "required": true,
+            "description": "Longitude of the location.",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "layer",
+            "in": "query",
+            "required": true,
+            "description": "Layer type.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "building_blocks",
+                "country",
+                "floods",
+                "parcels",
+                "seismic_zones",
+                "wildfire"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Layer data for the given location.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/reconstruction-cost/": {
+      "get": {
+        "summary": "Calculate reconstruction cost",
+        "description": "Calculates the as-new reconstruction cost of a property from its postal-code prefix, property type, and build area. If a construction year is supplied, the as-is (depreciated) value is also returned.",
+        "operationId": "getReconstructionCost",
+        "security": [],
+        "parameters": [
+          {
+            "name": "postal_code",
+            "in": "query",
+            "required": true,
+            "description": "Full postal code. Only the first two digits are used for the cost lookup. Numeric, at least two digits.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "property_type",
+            "in": "query",
+            "required": true,
+            "description": "Property type.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "apartment",
+                "house",
+                "maisonette"
+              ]
+            }
+          },
+          {
+            "name": "build_area",
+            "in": "query",
+            "required": true,
+            "description": "Build area in m\u00b2. Must be greater than 0.",
+            "schema": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            }
+          },
+          {
+            "name": "construction_year",
+            "in": "query",
+            "required": false,
+            "description": "Construction year. When provided, the response also includes the as-is (depreciated) value. Cannot be in the future.",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Reconstruction cost result.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReconstructionCostResponse"
+                },
+                "example": {
+                  "reconstruction_cost": {
+                    "as_new": 145000.0,
+                    "as_is": 112000.0
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input parameters."
+          },
+          "422": {
+            "description": "No reconstruction cost mapping exists for the given postal-code prefix and property type."
+          }
+        }
+      }
+    },
     "/auth/otp/login": {
       "post": {
         "summary": "Login",
