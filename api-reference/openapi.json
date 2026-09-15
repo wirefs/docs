@@ -1447,7 +1447,7 @@
             "name": "build_area",
             "in": "query",
             "required": true,
-            "description": "Build area in m\u00b2. Must be greater than 0.",
+            "description": "Build area in m². Must be greater than 0.",
             "schema": {
               "type": "number",
               "exclusiveMinimum": 0
@@ -1473,8 +1473,8 @@
                 },
                 "example": {
                   "reconstruction_cost": {
-                    "as_new": 145000.0,
-                    "as_is": 112000.0
+                    "as_new": 145000,
+                    "as_is": 112000
                   }
                 }
               }
@@ -1574,7 +1574,7 @@
                     "place_type": "park",
                     "latitude": 37.9797085,
                     "longitude": 23.75967373,
-                    "distance": 0.0
+                    "distance": 0
                   },
                   {
                     "id": 65625,
@@ -1757,6 +1757,130 @@
           },
           "401": {
             "description": "Missing or invalid JWT."
+          }
+        }
+      }
+    },
+    "/api/assets/": {
+      "post": {
+        "summary": "Create a property",
+        "operationId": "createAsset",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/AssetInput"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "purpose": {
+                        "type": "string",
+                        "enum": [
+                          "property_management"
+                        ],
+                        "default": "property_management",
+                        "description": "Fixed value. Always send \"property_management\" on create."
+                      },
+                      "files": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "format": "binary"
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The created property",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Asset"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/assets/{id}/": {
+      "patch": {
+        "summary": "Update a property",
+        "operationId": "updateAsset",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssetInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The updated property",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Asset"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    },
+    "/api/assets/{assetId}/": {
+      "delete": {
+        "summary": "Delete a property",
+        "operationId": "deleteAsset",
+        "parameters": [
+          {
+            "name": "assetId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Confirmation message",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteAssetResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
           }
         }
       }
@@ -2208,6 +2332,691 @@
               "null"
             ],
             "description": "Distance from the queried point, in metres, rounded to 2 decimals."
+          }
+        }
+      },
+      "AssetInput": {
+        "type": "object",
+        "required": [
+          "property_type"
+        ],
+        "properties": {
+          "portfolio": {
+            "type": "string",
+            "nullable": true
+          },
+          "ref_asset_id": {
+            "type": "string",
+            "nullable": true
+          },
+          "reference_id": {
+            "type": "string",
+            "nullable": true
+          },
+          "notes": {
+            "type": "string",
+            "nullable": true,
+            "description": "Must be valid HTML, e.g. <p>text</p>."
+          },
+          "address": {
+            "type": "string",
+            "nullable": true
+          },
+          "latitude": {
+            "type": "number",
+            "nullable": true
+          },
+          "longitude": {
+            "type": "number",
+            "nullable": true
+          },
+          "district": {
+            "type": "string",
+            "nullable": true,
+            "description": "Free-text district name."
+          },
+          "zone_name": {
+            "type": "string",
+            "nullable": true
+          },
+          "country": {
+            "type": "string",
+            "enum": [
+              "greece",
+              "cyprus"
+            ]
+          },
+          "region": {
+            "type": "integer",
+            "nullable": true
+          },
+          "regional_unit": {
+            "type": "integer",
+            "nullable": true
+          },
+          "neighborhood": {
+            "type": "integer",
+            "nullable": true
+          },
+          "listing_type": {
+            "type": "string",
+            "nullable": true,
+            "enum": [
+              "rent",
+              "sale",
+              "sold",
+              ""
+            ]
+          },
+          "listing_status": {
+            "type": "string",
+            "nullable": true,
+            "enum": [
+              "active",
+              "inactive",
+              ""
+            ]
+          },
+          "property_type": {
+            "type": "string",
+            "enum": [
+              "Apartment",
+              "House",
+              "Field",
+              "Plot",
+              "Warehouse",
+              "Shop",
+              "Office",
+              "Storage",
+              "Retail",
+              "Right to Build",
+              "Parking space",
+              "Other"
+            ]
+          },
+          "property_usage": {
+            "type": "string",
+            "nullable": true,
+            "description": "Free text, not a server-enforced enum."
+          },
+          "price": {
+            "type": "string",
+            "format": "decimal",
+            "nullable": true
+          },
+          "sales_price": {
+            "type": "string",
+            "format": "decimal",
+            "nullable": true
+          },
+          "build_area": {
+            "type": "number",
+            "nullable": true
+          },
+          "land_area": {
+            "type": "number",
+            "nullable": true
+          },
+          "basement_area": {
+            "type": "number",
+            "nullable": true
+          },
+          "covered_veranda_area": {
+            "type": "number",
+            "nullable": true
+          },
+          "uncovered_veranda_area": {
+            "type": "number",
+            "nullable": true
+          },
+          "construction_year": {
+            "type": "integer",
+            "nullable": true
+          },
+          "renovated": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "renovation_year": {
+            "type": "integer",
+            "nullable": true
+          },
+          "building_floor_count": {
+            "type": "integer",
+            "nullable": true
+          },
+          "floor_number": {
+            "type": "integer",
+            "nullable": true
+          },
+          "number_of_bedrooms": {
+            "type": "integer",
+            "nullable": true
+          },
+          "number_of_bathrooms": {
+            "type": "integer",
+            "nullable": true
+          },
+          "parking_space": {
+            "type": "integer",
+            "nullable": true
+          },
+          "has_parking_space": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "storage_space": {
+            "type": "integer",
+            "nullable": true
+          },
+          "heating_type": {
+            "type": "string",
+            "nullable": true,
+            "description": "Free text, not a server-enforced enum."
+          },
+          "cooling_type": {
+            "type": "string",
+            "nullable": true
+          },
+          "energy_class": {
+            "type": "string",
+            "nullable": true,
+            "description": "Free text, not a server-enforced enum."
+          },
+          "condition": {
+            "type": "string",
+            "nullable": true,
+            "description": "Free text, not a server-enforced enum."
+          },
+          "view": {
+            "type": "string",
+            "nullable": true,
+            "description": "Free text, not a server-enforced enum."
+          },
+          "right_of_ownership": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "seller": {
+            "type": "string",
+            "nullable": true
+          },
+          "owner": {
+            "type": "string",
+            "nullable": true
+          },
+          "auction": {
+            "type": "boolean"
+          },
+          "road_access": {
+            "type": "boolean"
+          },
+          "garden": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "swimming_pool": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "building_coefficient": {
+            "type": "number",
+            "nullable": true
+          },
+          "coverage_ratio": {
+            "type": "number",
+            "nullable": true
+          },
+          "parcel_id": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 30
+          },
+          "registration_number": {
+            "type": "string",
+            "nullable": true
+          },
+          "registration_block": {
+            "type": "string",
+            "nullable": true
+          },
+          "registration_codes": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "type": "object",
+              "required": [
+                "code"
+              ],
+              "properties": {
+                "code": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "country": {
+                  "type": "string",
+                  "nullable": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "Asset": {
+        "type": "object",
+        "description": "A manually managed property record, as returned by create, retrieve, and update. Verified against live responses.",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "ref_asset_id": {
+            "type": "string",
+            "nullable": true
+          },
+          "reference_id": {
+            "type": "string",
+            "nullable": true
+          },
+          "municipality": {
+            "type": "object",
+            "nullable": true,
+            "properties": {
+              "id": {
+                "type": "integer"
+              },
+              "name_en": {
+                "type": "string"
+              }
+            }
+          },
+          "municipal_unit": {
+            "type": "object",
+            "nullable": true,
+            "properties": {
+              "id": {
+                "type": "integer"
+              },
+              "name_en": {
+                "type": "string"
+              }
+            }
+          },
+          "region": {
+            "type": "integer",
+            "nullable": true
+          },
+          "regional_unit": {
+            "type": "integer",
+            "nullable": true
+          },
+          "neighborhood": {
+            "type": "integer",
+            "nullable": true
+          },
+          "marketability_report_id": {
+            "type": "integer",
+            "nullable": true
+          },
+          "marketability_report_status": {
+            "type": "string",
+            "nullable": true
+          },
+          "marketability_report_task_id": {
+            "type": "integer",
+            "nullable": true
+          },
+          "marketability_report_task_status": {
+            "type": "string",
+            "nullable": true
+          },
+          "marketability_report_task_approved_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "marketability_report_reference": {
+            "type": "string",
+            "nullable": true
+          },
+          "adjusted_price_sqm": {
+            "type": "number",
+            "nullable": true
+          },
+          "files": {
+            "type": "array",
+            "items": {}
+          },
+          "sub_assets": {
+            "type": "array",
+            "items": {}
+          },
+          "registration_codes": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "country": {
+                  "type": "string",
+                  "nullable": true
+                }
+              }
+            }
+          },
+          "deleted": {
+            "type": "boolean"
+          },
+          "notes": {
+            "type": "string",
+            "nullable": true,
+            "description": "HTML content."
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "modified_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "listing_type": {
+            "type": "string",
+            "nullable": true,
+            "enum": [
+              "rent",
+              "sale",
+              "sold",
+              ""
+            ]
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "url": {
+            "type": "string",
+            "nullable": true
+          },
+          "images": {
+            "type": "string",
+            "nullable": true
+          },
+          "source": {
+            "type": "string",
+            "nullable": true
+          },
+          "eauction_code": {
+            "type": "string",
+            "nullable": true
+          },
+          "price": {
+            "type": "string",
+            "nullable": true,
+            "description": "Decimal string, e.g. \"150000.0000\"."
+          },
+          "sales_price": {
+            "type": "string",
+            "nullable": true
+          },
+          "price_per_sqm": {
+            "type": "string",
+            "nullable": true
+          },
+          "auction": {
+            "type": "boolean"
+          },
+          "auction_status": {
+            "type": "string",
+            "nullable": true
+          },
+          "auction_kind": {
+            "type": "string",
+            "nullable": true
+          },
+          "auction_notice_date": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "auction_conduct_date": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "address": {
+            "type": "string",
+            "nullable": true
+          },
+          "country": {
+            "type": "string",
+            "enum": [
+              "greece",
+              "cyprus"
+            ]
+          },
+          "district": {
+            "type": "string",
+            "nullable": true
+          },
+          "zone_name": {
+            "type": "string",
+            "nullable": true
+          },
+          "client_id": {
+            "type": "string",
+            "nullable": true
+          },
+          "client_name": {
+            "type": "string",
+            "nullable": true
+          },
+          "owner": {
+            "type": "string",
+            "nullable": true
+          },
+          "seller": {
+            "type": "string",
+            "nullable": true
+          },
+          "latitude": {
+            "type": "number",
+            "nullable": true
+          },
+          "longitude": {
+            "type": "number",
+            "nullable": true
+          },
+          "property_type": {
+            "type": "string",
+            "nullable": true,
+            "enum": [
+              "Apartment",
+              "House",
+              "Field",
+              "Plot",
+              "Warehouse",
+              "Shop",
+              "Office",
+              "Storage",
+              "Retail",
+              "Right to Build",
+              "Parking space",
+              "Other"
+            ]
+          },
+          "property_usage": {
+            "type": "string",
+            "nullable": true,
+            "enum": [
+              "residential",
+              "commercial",
+              "mixed"
+            ]
+          },
+          "portfolio": {
+            "type": "string",
+            "nullable": true
+          },
+          "purpose": {
+            "type": "string",
+            "nullable": true
+          },
+          "build_area": {
+            "type": "number",
+            "nullable": true
+          },
+          "land_area": {
+            "type": "number",
+            "nullable": true
+          },
+          "basement_area": {
+            "type": "number",
+            "nullable": true
+          },
+          "covered_veranda_area": {
+            "type": "number",
+            "nullable": true
+          },
+          "uncovered_veranda_area": {
+            "type": "number",
+            "nullable": true
+          },
+          "construction_year": {
+            "type": "integer",
+            "nullable": true
+          },
+          "renovated": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "renovation_year": {
+            "type": "integer",
+            "nullable": true
+          },
+          "building_floor_count": {
+            "type": "integer",
+            "nullable": true
+          },
+          "floor_number": {
+            "type": "integer",
+            "nullable": true
+          },
+          "parking_space": {
+            "type": "integer",
+            "nullable": true
+          },
+          "has_parking_space": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "storage_space": {
+            "type": "integer",
+            "nullable": true
+          },
+          "garden": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "swimming_pool": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "road_access": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "heating_type": {
+            "type": "string",
+            "nullable": true
+          },
+          "cooling_type": {
+            "type": "string",
+            "nullable": true
+          },
+          "energy_class": {
+            "type": "string",
+            "nullable": true
+          },
+          "condition": {
+            "type": "string",
+            "nullable": true
+          },
+          "view": {
+            "type": "string",
+            "nullable": true
+          },
+          "right_of_ownership": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "overview": {
+            "type": "string",
+            "nullable": true
+          },
+          "map_url": {
+            "type": "string",
+            "nullable": true
+          },
+          "coverage_ratio": {
+            "type": "number",
+            "nullable": true
+          },
+          "building_coefficient": {
+            "type": "number",
+            "nullable": true
+          },
+          "registration_number": {
+            "type": "string",
+            "nullable": true
+          },
+          "registration_block": {
+            "type": "string",
+            "nullable": true
+          },
+          "parcel_id": {
+            "type": "string",
+            "nullable": true
+          },
+          "listing_status": {
+            "type": "string",
+            "nullable": true,
+            "enum": [
+              "active",
+              "inactive",
+              ""
+            ]
+          },
+          "share_on_sale": {
+            "type": "string",
+            "nullable": true
+          },
+          "number_of_bedrooms": {
+            "type": "integer",
+            "nullable": true
+          },
+          "number_of_bathrooms": {
+            "type": "integer",
+            "nullable": true
+          }
+        }
+      },
+      "DeleteAssetResponse": {
+        "type": "object",
+        "properties": {
+          "detail": {
+            "type": "string",
+            "example": "Assets successfully deleted."
           }
         }
       }

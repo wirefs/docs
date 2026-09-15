@@ -1,0 +1,299 @@
+---
+title: "Update a property"
+description: "Update an existing, manually managed property record."
+openapi: "PATCH /api/assets/{id}/"
+---
+
+## Overview
+
+Partially updates a property record by its Ask Wire `id`. Only the fields included in the request body are changed; omitted fields are left as-is.
+
+Send the request as `application/json`. To attach or replace supporting documents, use the asset files endpoints instead of this one.
+
+<Warning>
+  `notes` must be valid HTML (e.g. `<p>your text</p>`), not plain text.
+  Sending plain text in `notes` currently fails with
+  `500 {"error": "Asset update failed"}` on this endpoint — [Create a
+  property](/api-reference/endpoint/create) rejects the same input more
+  correctly, with `400 {"notes": ["Content must be valid HTML."]}`.
+  Wrapping the value in an HTML tag updates successfully here. Every other
+  field verified below updates successfully regardless of format.
+</Warning>
+
+<Note>
+  Sending an explicit `null` for a field does not clear it — the field keeps
+  its previous value. There is currently no verified way to clear a field via
+  this endpoint.
+</Note>
+
+---
+
+## Path parameters
+
+| Parameter | Type    | Description                          |
+| --------- | ------- | ------------------------------------- |
+| `id`      | integer | Ask Wire ID of the property to update. |
+
+---
+
+## Request
+
+### Body (application/json)
+
+Accepts the same fields as [Create a property](/api-reference/endpoint/create) (except `purpose`, see below), all optional — include only the fields you want to change.
+
+#### Core fields
+
+| Field          | Type   | Description                                              |
+| -------------- | ------ | ----------------------------------------------------------- |
+| `portfolio`    | string | Portfolio the property belongs to.                        |
+| `ref_asset_id` | string | Your own external reference ID for this property.         |
+| `reference_id` | string | Source system reference ID.                                |
+| `notes`        | string | Free-text internal notes.                                 |
+
+<Note>
+  `purpose` is not accepted on this endpoint — it's set on create and
+  isn't changed via update. It's still returned in the response below.
+</Note>
+
+---
+
+#### Location
+
+<Note>
+  `address`, `latitude`, `longitude`, `property_type`, `price`, and
+  `floor_number` were verified against a live PATCH response. Per the
+  backend's own schema, `municipality` is **not** a writable field —
+  `region`, `regional_unit`, and `neighborhood` (plain integer IDs) are what
+  the endpoint actually accepts for geography.
+</Note>
+
+| Field           | Type    | Description                                          |
+| --------------- | ------- | ------------------------------------------------------- |
+| `address`       | string  | Full address string.                                    |
+| `latitude`      | number  | Latitude coordinate.                                    |
+| `longitude`     | number  | Longitude coordinate.                                   |
+| `district`      | string  | Free-text district name.                                |
+| `zone_name`     | string  | Free-text zone name.                                    |
+| `region`        | integer | Region ID (level 3).                                    |
+| `regional_unit` | integer | Regional unit ID (level 4).                             |
+| `neighborhood`  | integer | Neighborhood ID.                                        |
+
+---
+
+#### Classification
+
+| Field            | Type   | Values                       | Description                                     |
+| ---------------- | ------ | ----------------------------- | ------------------------------------------------- |
+| `country`        | string | `greece`, `cyprus`            | Country the property is located in.              |
+| `listing_type`   | string | `rent`, `sale`, `sold`        | Listing type, if this asset is also a listing.   |
+| `listing_status` | string | `active`, `inactive`          | Listing status.                                  |
+
+---
+
+#### Property details
+
+<Note>
+  `property_type` is the only field below with a server-enforced enum,
+  verified against the backend's own schema. `property_usage`,
+  `heating_type`, `energy_class`, `condition`, and `view` are free-text
+  strings (up to 255 characters) as far as the API is concerned — the values
+  listed for them are conventions used by the Ask Wire web app, not
+  constraints the API enforces.
+</Note>
+
+| Field                     | Type    | Values                                          | Description                                    |
+| ------------------------- | ------- | ------------------------------------------------ | ----------------------------------------------- |
+| `property_type`           | string  | `Apartment`, `House`, `Field`, `Plot`, `Warehouse`, `Shop`, `Office`, `Storage`, `Retail`, `Right to Build`, `Parking space`, `Other` | Property category.  |
+| `property_usage`          | string  | e.g. `residential`, `commercial`, `mixed`         | Intended use of the property. Free text.        |
+| `land_use`                | string  | e.g. `residential`, `commercial`, `mixed`         | Zoning / permitted use of the land. Free text.  |
+| `price`                   | number  |                                                    | Asking or listed price.                         |
+| `build_area`              | number  |                                                    | Built area in sqm.                              |
+| `land_area`               | number  |                                                    | Land area in sqm.                               |
+| `basement_area`           | number  |                                                    | Basement area in sqm.                           |
+| `covered_veranda_area`    | number  |                                                    | Covered veranda area in sqm.                    |
+| `uncovered_veranda_area`  | number  |                                                    | Uncovered veranda area in sqm.                  |
+| `construction_year`       | integer |                                                    | Year the building was constructed.              |
+| `renovated`                | boolean | `true`, `false`                                   | Whether the property has been renovated.        |
+| `renovation_year`         | integer |                                                    | Year of the most recent renovation.             |
+| `building_floor_count`    | integer |                                                    | Total number of floors in the building.         |
+| `floor_number`            | integer |                                                    | Floor the property is on.                       |
+| `number_of_bedrooms`      | integer |                                                    | Number of bedrooms.                             |
+| `number_of_bathrooms`     | integer |                                                    | Number of bathrooms.                            |
+| `parking_space`           | integer |                                                    | Number of parking spaces.                       |
+| `storage_space`           | integer |                                                    | Number of storage spaces.                       |
+| `heating_type`            | string  | e.g. `autonomous (Oil)`, `autonomous (Gas)`, `central (Oil)`, `central (Gas)`, `heatpump`, `Fireplace/Stove` | Type of heating system. Free text. |
+| `energy_class`            | string  | e.g. `A+`, `A`, `B+`, `B`, `C`, `D`, `E`, `F`, `G` | Energy performance rating. Free text.           |
+| `condition`               | string  | e.g. `poor`, `fair`, `good`                       | Overall condition of the property. Free text.   |
+| `view`                    | string  | e.g. `poor`, `fair`, `good`                       | Quality of the view from the property. Free text. |
+| `garden`                  | boolean | `true`, `false`                                   | Has a garden.                                   |
+| `swimming_pool`           | boolean | `true`, `false`                                   | Has a swimming pool.                            |
+| `road_access`             | boolean | `true`, `false`                                   | Has direct road access.                         |
+| `percent_of_ownership`    | number  |                                                    | Percentage of ownership held for this property. |
+| `building_coefficient`    | number  |                                                    | Building coefficient for the plot.              |
+| `coverage_ratio`          | number  |                                                    | Coverage ratio for the plot.                    |
+
+---
+
+#### Cadastral details
+
+<Note>
+  `sheet_number`, `plan_number`, `parcel_block_number`, `parcel_number`,
+  and `block_number` are **not** fields on this endpoint — per the backend
+  schema, only the fields below are accepted here. Those other identifiers
+  belong to a separate Cyprus cadastral-search lookup flow in the app, not
+  to asset updates.
+</Note>
+
+| Field                  | Type   | Description                                                          |
+| ----------------------- | ------ | ----------------------------------------------------------------------- |
+| `parcel_id`             | string | Parcel identifier (max 30 characters).                                |
+| `registration_number`   | string | Cadastral registration number.                                        |
+| `registration_block`    | string | Cadastral registration block.                                         |
+| `registration_codes`    | array  | Array of `{ code, country }` objects. `code` is required per entry.   |
+
+---
+
+## Example request
+
+```bash
+curl -X PATCH "https://pandora.ask-wire.com/api/assets/4521/" \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "price": 179000,
+    "condition": "good",
+    "renovated": true,
+    "renovation_year": 2024
+  }'
+```
+
+---
+
+## Response
+
+Returns the full, updated asset record. Verified against a live response — field set and shapes below are accurate as observed, not assumed.
+
+```json
+{
+  "id": 2023964,
+  "ref_asset_id": "test apart gr",
+  "municipality": { "id": 208, "name_en": "Thessaloniki" },
+  "municipal_unit": { "id": 1293, "name_en": "Thessaloniki" },
+  "marketability_report_id": 9074,
+  "marketability_report_status": "draft",
+  "marketability_report_task_id": 9012,
+  "marketability_report_task_status": "in_progress",
+  "adjusted_price_sqm": 3606.67027,
+  "marketability_report_task_approved_at": null,
+  "files": [],
+  "sub_assets": [],
+  "registration_codes": [],
+  "deleted": false,
+  "notes": null,
+  "created_at": "2026-09-11T12:25:33.079474Z",
+  "modified_at": "2026-09-15T16:41:13.613932Z",
+  "listing_type": "sale",
+  "title": null,
+  "url": null,
+  "images": null,
+  "source": null,
+  "eauction_code": null,
+  "reference_id": "test apart gr",
+  "price": "150000.0000",
+  "sales_price": null,
+  "auction_status": null,
+  "auction_kind": null,
+  "auction_notice_date": null,
+  "auction_conduct_date": null,
+  "address": "Melenikou Konstantinou Street 29, 546 35 Thessaloniki, Greece",
+  "country": "greece",
+  "client_id": "cln-ixSNPPuSA",
+  "district": null,
+  "zone_name": null,
+  "latitude": 40.6339461,
+  "longitude": 22.9543579,
+  "property_type": "Apartment",
+  "property_usage": null,
+  "portfolio": null,
+  "build_area": 38.0,
+  "basement_area": null,
+  "land_area": null,
+  "covered_veranda_area": null,
+  "uncovered_veranda_area": null,
+  "construction_year": 1964,
+  "renovated": true,
+  "renovation_year": 2024,
+  "price_per_sqm": null,
+  "building_floor_count": null,
+  "floor_number": 1,
+  "parking_space": null,
+  "has_parking_space": null,
+  "storage_space": null,
+  "garden": null,
+  "heating_type": null,
+  "cooling_type": null,
+  "number_of_bedrooms": null,
+  "number_of_bathrooms": null,
+  "swimming_pool": null,
+  "condition": null,
+  "energy_class": null,
+  "view": null,
+  "right_of_ownership": null,
+  "description": null,
+  "seller": null,
+  "listing_status": null,
+  "marketability_report_reference": null,
+  "owner": null,
+  "auction": false,
+  "road_access": false,
+  "client_name": "Georgios Xydias",
+  "share_on_sale": null,
+  "overview": null,
+  "coverage_ratio": null,
+  "building_coefficient": null,
+  "map_url": null,
+  "registration_number": null,
+  "registration_block": null,
+  "parcel_id": null,
+  "purpose": "property_management",
+  "region": 2,
+  "regional_unit": 32,
+  "neighborhood": 1589
+}
+```
+
+### Response fields
+
+| Field                              | Type          | Description                                                                 |
+| ----------------------------------- | ------------- | ----------------------------------------------------------------------------- |
+| `id`                                | integer       | Ask Wire asset ID.                                                          |
+| `ref_asset_id` / `reference_id`     | string        | Your external reference ID(s) for this asset.                              |
+| `municipality`, `municipal_unit`    | object \| null | `{ id, name_en }`. Read-only — derived from `address` (or from `region`/`regional_unit`/`neighborhood` if set); not a field you can send directly. |
+| `region`, `regional_unit`, `neighborhood` | integer \| null | Geographic hierarchy IDs. Writable — see Location fields above.        |
+| `sub_assets`                        | array         | Related sub-assets, managed via a separate endpoint, not this one.       |
+| `marketability_report_id`, `marketability_report_status`, `marketability_report_task_id`, `marketability_report_task_status`, `marketability_report_task_approved_at`, `marketability_report_reference` | various | Linked valuation/marketability report state. Read-only. |
+| `adjusted_price_sqm`                | number \| null | Computed price per sqm used in valuation.                                 |
+| `files`                             | array         | Attached documents. Managed via the asset files endpoints, not this one.   |
+| `registration_codes`                | array         | Array of `{ code, country }` objects.                                     |
+| `deleted`                           | boolean       | Soft-delete flag.                                                          |
+| `notes`                             | string \| null | Internal notes. See warning above — cannot currently be set via PATCH.    |
+| `created_at`, `modified_at`         | datetime      | Record timestamps.                                                          |
+| `listing_type`                      | string \| null | e.g. `sale`.                                                                |
+| `title`, `url`, `images`, `source`, `eauction_code` | string \| null | Metadata, mostly populated for auction/source-linked assets.       |
+| `price`, `sales_price`, `price_per_sqm` | string \| null | Monetary fields. **`price` is returned as a decimal string**, not a number. |
+| `auction`, `auction_status`, `auction_kind`, `auction_notice_date`, `auction_conduct_date` | various | Auction metadata, when applicable.                    |
+| `address`, `country`, `district`, `zone_name` | string \| null | Location fields. `district` is a plain string here, not an object.  |
+| `client_id`, `client_name`, `owner`, `seller` | string \| null | Ownership / client attribution.                                    |
+| `latitude`, `longitude`             | number \| null | Coordinates.                                                               |
+| `property_type`, `property_usage`, `portfolio`, `purpose` | string \| null | Classification fields.                                       |
+| `build_area`, `land_area`, `basement_area`, `covered_veranda_area`, `uncovered_veranda_area` | number \| null | Areas in sqm.  |
+| `construction_year`, `renovated`, `renovation_year` | various | Construction details.                                              |
+| `building_floor_count`, `floor_number` | integer \| null | Floor details.                                                         |
+| `parking_space`, `has_parking_space`, `storage_space` | various | Parking / storage.                                                 |
+| `garden`, `swimming_pool`, `road_access` | boolean \| null | Amenity flags.                                                        |
+| `heating_type`, `cooling_type`, `energy_class`, `condition`, `view`, `right_of_ownership` | string \| null | Building/condition attributes. |
+| `description`, `overview`, `map_url` | string \| null | Free-text and link fields.                                                |
+| `coverage_ratio`, `building_coefficient` | number \| null | Plot ratios.                                                          |
+| `registration_number`, `registration_block`, `parcel_id` | string \| null | Cadastral identifiers.                                     |
+| `listing_status`, `share_on_sale`  | string \| null | Listing state.                                                             |

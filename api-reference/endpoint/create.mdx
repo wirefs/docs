@@ -1,4 +1,266 @@
 ---
-title: 'Create Plant'
-openapi: 'POST /plants'
+title: "Create a property"
+description: "Manually create a new property record."
+openapi: "POST /api/assets/"
 ---
+
+## Overview
+
+Creates a new property record from manually entered data, for example when adding a property that doesn't come from an automated source feed. Supporting documents can be attached in the same request.
+
+Send the request as `multipart/form-data` so that files can be included alongside the property fields.
+
+<Note>
+  Location fields are auto-derived server-side from `address` — a verified
+  live create with only `address` and `property_type` came back with
+  `municipality`, `municipal_unit`, `region`, `regional_unit`, `neighborhood`,
+  `latitude`, and `longitude` all populated automatically via geocoding.
+  There's no need to resolve these yourself before creating a record.
+</Note>
+
+<Warning>
+  `notes` must be valid HTML, not plain text — sending plain text returns
+  `400 {"notes": ["Content must be valid HTML."]}`. Wrap content in a tag,
+  e.g. `<p>your text</p>`. On
+  [Update a property](/api-reference/endpoint/update), the same invalid input
+  returns a `500` instead of this `400`, so validate HTML client-side before
+  sending to either endpoint.
+</Warning>
+
+---
+
+## Request
+
+### Body (multipart/form-data)
+
+#### Core fields
+
+| Field          | Type   | Description                                              |
+| -------------- | ------ | --------------------------------------------------------- |
+| `portfolio`    | string | Portfolio the property belongs to.                        |
+| `ref_asset_id` | string | Your own external reference ID for this property.         |
+| `reference_id` | string | Source system reference ID.                                |
+| `notes`        | string | Free-text internal notes.                                 |
+
+<Note>
+  Always send `purpose` as the fixed value `"property_management"` on
+  create. It isn't a field you vary per request.
+</Note>
+
+---
+
+#### Classification
+
+| Field            | Type   | Values                       | Description                                                             |
+| ---------------- | ------ | ----------------------------- | ------------------------------------------------------------------------ |
+| `country`        | string | `greece`, `cyprus`            | Country the property is located in.                                     |
+| `listing_type`   | string | `rent`, `sale`, `sold`        | Listing type, if this asset is also a listing.                          |
+| `listing_status` | string | `active`, `inactive`          | Listing status.                                                          |
+
+---
+
+#### Location
+
+<Note>
+  Per the backend's own schema, `municipality` is **not** a field you can
+  set directly — send `address` and the server geocodes `municipality`,
+  `region`, `regional_unit`, and `neighborhood` automatically (verified
+  against a live response). Use `region` / `regional_unit` / `neighborhood`
+  below only if you need to override the geocoded result.
+</Note>
+
+| Field           | Type    | Description                                                          |
+| --------------- | ------- | ---------------------------------------------------------------------- |
+| `address`       | string  | Full address string. Drives automatic geocoding.                     |
+| `latitude`      | number  | Latitude coordinate.                                                  |
+| `longitude`     | number  | Longitude coordinate.                                                 |
+| `district`      | string  | Free-text district name.                                              |
+| `zone_name`     | string  | Free-text zone name.                                                  |
+| `region`        | integer | Region ID (level 3). Overrides the geocoded value if set.             |
+| `regional_unit` | integer | Regional unit ID (level 4). Overrides the geocoded value if set.      |
+| `neighborhood`  | integer | Neighborhood ID. Overrides the geocoded value if set.                 |
+
+---
+
+#### Property details
+
+<Note>
+  `property_type` is the only field below with a server-enforced enum,
+  verified against the backend's own schema. `property_usage`,
+  `heating_type`, `energy_class`, `condition`, and `view` are free-text
+  strings (up to 255 characters) as far as the API is concerned — the values
+  listed for them are conventions used by the Ask Wire web app, not
+  constraints the API enforces.
+</Note>
+
+| Field                     | Type    | Values                                          | Description                                    |
+| ------------------------- | ------- | ------------------------------------------------ | ----------------------------------------------- |
+| `property_type`           | string  | `Apartment`, `House`, `Field`, `Plot`, `Warehouse`, `Shop`, `Office`, `Storage`, `Retail`, `Right to Build`, `Parking space`, `Other` | Property category. Required.                    |
+| `property_usage`          | string  | e.g. `residential`, `commercial`, `mixed`         | Intended use of the property. Free text.        |
+| `land_use`                | string  | e.g. `residential`, `commercial`, `mixed`         | Zoning / permitted use of the land. Free text.  |
+| `price`                   | number  |                                                    | Asking or listed price.                         |
+| `build_area`              | number  |                                                    | Built area in sqm.                              |
+| `land_area`               | number  |                                                    | Land area in sqm.                               |
+| `basement_area`           | number  |                                                    | Basement area in sqm.                           |
+| `covered_veranda_area`    | number  |                                                    | Covered veranda area in sqm.                    |
+| `uncovered_veranda_area`  | number  |                                                    | Uncovered veranda area in sqm.                  |
+| `construction_year`       | integer |                                                    | Year the building was constructed.              |
+| `renovated`                | boolean | `true`, `false`                                   | Whether the property has been renovated.        |
+| `renovation_year`         | integer |                                                    | Year of the most recent renovation.             |
+| `building_floor_count`    | integer |                                                    | Total number of floors in the building.         |
+| `floor_number`            | integer |                                                    | Floor the property is on.                       |
+| `number_of_bedrooms`      | integer |                                                    | Number of bedrooms.                             |
+| `number_of_bathrooms`     | integer |                                                    | Number of bathrooms.                            |
+| `parking_space`           | integer |                                                    | Number of parking spaces.                       |
+| `storage_space`           | integer |                                                    | Number of storage spaces.                       |
+| `heating_type`            | string  | e.g. `autonomous (Oil)`, `autonomous (Gas)`, `central (Oil)`, `central (Gas)`, `heatpump`, `Fireplace/Stove` | Type of heating system. Free text. |
+| `energy_class`            | string  | e.g. `A+`, `A`, `B+`, `B`, `C`, `D`, `E`, `F`, `G` | Energy performance rating. Free text.           |
+| `condition`               | string  | e.g. `poor`, `fair`, `good`                       | Overall condition of the property. Free text.   |
+| `view`                    | string  | e.g. `poor`, `fair`, `good`                       | Quality of the view from the property. Free text. |
+| `garden`                  | boolean | `true`, `false`                                   | Has a garden.                                   |
+| `swimming_pool`           | boolean | `true`, `false`                                   | Has a swimming pool.                            |
+| `road_access`             | boolean | `true`, `false`                                   | Has direct road access.                         |
+| `percent_of_ownership`    | number  |                                                    | Percentage of ownership held for this property. |
+| `building_coefficient`    | number  |                                                    | Building coefficient for the plot.              |
+| `coverage_ratio`          | number  |                                                    | Coverage ratio for the plot.                    |
+
+---
+
+#### Cadastral details
+
+<Note>
+  `sheet_number`, `plan_number`, `parcel_block_number`, `parcel_number`,
+  and `block_number` are **not** fields on this endpoint — per the backend
+  schema, only the fields below are accepted here. Those other identifiers
+  belong to a separate Cyprus cadastral-search lookup flow in the app, not
+  to asset creation.
+</Note>
+
+| Field                  | Type   | Description                                                          |
+| ----------------------- | ------ | ----------------------------------------------------------------------- |
+| `parcel_id`             | string | Parcel identifier (max 30 characters).                                |
+| `registration_number`   | string | Cadastral registration number.                                        |
+| `registration_block`    | string | Cadastral registration block.                                         |
+| `registration_codes`    | array  | Array of `{ code, country }` objects. `code` is required per entry.   |
+
+---
+
+#### Files
+
+| Field   | Type      | Description                                                          |
+| ------- | --------- | ---------------------------------------------------------------------- |
+| `files` | file[]    | One or more supporting documents to attach. Repeat the field per file. |
+
+---
+
+## Example request
+
+```bash
+curl -X POST "https://pandora.ask-wire.com/api/assets/" \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  --form 'address="12 Ledra Street, Nicosia"' \
+  --form 'property_type="Apartment"' \
+  --form 'property_usage="residential"' \
+  --form 'purpose="property_management"' \
+  --form 'price="185000"' \
+  --form 'build_area="95"' \
+  --form 'number_of_bedrooms="2"' \
+  --form 'files=@/path/to/title-deed.pdf'
+```
+
+---
+
+## Response
+
+Returns `201 Created` with the full created asset record — same shape as [Update a property](/api-reference/endpoint/update#response). Verified against a live response for a minimal create (`address` + `property_type` only):
+
+```json
+{
+  "id": 2024230,
+  "ref_asset_id": null,
+  "municipality": { "id": 112, "name_en": "Athens" },
+  "municipal_unit": { "id": 1016, "name_en": "Athens" },
+  "marketability_report_id": null,
+  "marketability_report_status": null,
+  "marketability_report_task_id": null,
+  "marketability_report_task_status": null,
+  "adjusted_price_sqm": null,
+  "marketability_report_task_approved_at": null,
+  "files": [],
+  "sub_assets": [],
+  "registration_codes": [],
+  "deleted": false,
+  "notes": null,
+  "created_at": "2026-09-15T16:48:46.873560Z",
+  "modified_at": "2026-09-15T16:48:46.873583Z",
+  "listing_type": null,
+  "title": null,
+  "url": null,
+  "images": null,
+  "source": null,
+  "eauction_code": null,
+  "reference_id": null,
+  "price": null,
+  "sales_price": null,
+  "auction_status": null,
+  "auction_kind": null,
+  "auction_notice_date": null,
+  "auction_conduct_date": null,
+  "address": "Docs Test Street 1, Athens, Greece",
+  "country": "greece",
+  "client_id": "cln-ixSNPPuSA",
+  "district": null,
+  "zone_name": null,
+  "latitude": 37.9838096,
+  "longitude": 23.7275388,
+  "property_type": "Apartment",
+  "property_usage": null,
+  "portfolio": null,
+  "build_area": null,
+  "basement_area": null,
+  "land_area": null,
+  "covered_veranda_area": null,
+  "uncovered_veranda_area": null,
+  "construction_year": null,
+  "renovated": null,
+  "renovation_year": null,
+  "price_per_sqm": null,
+  "building_floor_count": null,
+  "floor_number": null,
+  "parking_space": null,
+  "has_parking_space": null,
+  "storage_space": null,
+  "garden": null,
+  "heating_type": null,
+  "cooling_type": null,
+  "number_of_bedrooms": null,
+  "number_of_bathrooms": null,
+  "swimming_pool": null,
+  "condition": null,
+  "energy_class": null,
+  "view": null,
+  "right_of_ownership": null,
+  "description": null,
+  "seller": null,
+  "listing_status": null,
+  "marketability_report_reference": null,
+  "owner": null,
+  "auction": false,
+  "road_access": false,
+  "client_name": null,
+  "share_on_sale": null,
+  "overview": null,
+  "coverage_ratio": null,
+  "building_coefficient": null,
+  "map_url": null,
+  "registration_number": null,
+  "registration_block": null,
+  "parcel_id": null,
+  "purpose": "property_management",
+  "region": 13,
+  "regional_unit": 87,
+  "neighborhood": 1539
+}
+```
+
+See [Update a property](/api-reference/endpoint/update#response) for the full response field reference — the shape is identical.
