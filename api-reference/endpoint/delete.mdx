@@ -1,4 +1,42 @@
 ---
-title: 'Delete Plant'
-openapi: 'DELETE /plants/{id}'
+title: "Delete a property"
+description: "Delete a manually managed property record by its Ask Wire ID."
+openapi: "DELETE /api/assets/{assetId}/"
 ---
+
+## Overview
+
+Permanently deletes a property record by its Ask Wire `id`. This is a hard delete — a subsequent `GET` on the same ID returns `404` with `{"detail": "No Asset matches the given query."}`. This cannot be undone.
+
+---
+
+## Path parameters
+
+| Parameter  | Type    | Description                          |
+| ---------- | ------- | ------------------------------------- |
+| `assetId`  | integer | Ask Wire ID of the property to delete. |
+
+---
+
+## Example request
+
+```bash
+curl -X DELETE "https://pandora.ask-wire.com/api/assets/4521/" \
+  -H "Authorization: Bearer YOUR_TOKEN"
+```
+
+---
+
+## Response
+
+Returns a confirmation message, not the deleted record. Verified against a live response:
+
+```json
+{
+  "detail": "Assets successfully deleted."
+}
+```
+
+| Field    | Type   | Description         |
+| -------- | ------ | -------------------- |
+| `detail` | string | Confirmation message. |
