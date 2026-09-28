@@ -31,6 +31,12 @@ Send the request as `multipart/form-data` so that files can be included alongsid
 
 ## Request
 
+### Headers
+
+| Header      | Type   | Required | Description                                      |
+| ----------- | ------ | -------- | ------------------------------------------------ |
+| `Api-Token` | string | Yes      | API token used to authenticate the request.      |
+
 ### Body (multipart/form-data)
 
 #### Core fields
@@ -157,7 +163,7 @@ Send the request as `multipart/form-data` so that files can be included alongsid
 
 ```bash
 curl -X POST "https://pandora.ask-wire.com/api/assets/" \
-  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Api-Token: YOUR_API_TOKEN" \
   --form 'address="12 Ledra Street, Nicosia"' \
   --form 'property_type="Apartment"' \
   --form 'property_usage="residential"' \

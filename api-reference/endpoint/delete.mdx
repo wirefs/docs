@@ -9,6 +9,11 @@ openapi: "DELETE /api/assets/{assetId}/"
 Permanently deletes a property record by its Ask Wire `id`. This is a hard delete — a subsequent `GET` on the same ID returns `404` with `{"detail": "No Asset matches the given query."}`. This cannot be undone.
 
 ---
+### Headers
+
+| Header      | Type   | Required | Description                                      |
+| ----------- | ------ | -------- | ------------------------------------------------ |
+| `Api-Token` | string | Yes      | API token used to authenticate the request.      |
 
 ## Path parameters
 
@@ -22,7 +27,7 @@ Permanently deletes a property record by its Ask Wire `id`. This is a hard delet
 
 ```bash
 curl -X DELETE "https://pandora.ask-wire.com/api/assets/4521/" \
-  -H "Authorization: Bearer YOUR_TOKEN"
+  -H "Api-Token: YOUR_API_TOKEN" \
 ```
 
 ---
