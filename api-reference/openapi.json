@@ -1765,6 +1765,11 @@
       "post": {
         "summary": "Create a property",
         "operationId": "createAsset",
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -1817,6 +1822,11 @@
       "patch": {
         "summary": "Update a property",
         "operationId": "updateAsset",
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
         "parameters": [
           {
             "name": "id",
@@ -1858,6 +1868,11 @@
       "delete": {
         "summary": "Delete a property",
         "operationId": "deleteAsset",
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
         "parameters": [
           {
             "name": "assetId",
@@ -3026,6 +3041,11 @@
         "type": "http",
         "scheme": "bearer",
         "bearerFormat": "JWT"
+      },
+      "ApiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Api-Token"
       }
     }
   }

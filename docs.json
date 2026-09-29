@@ -20,29 +20,11 @@
             ]
           },
           {
-            "group": "Authentication",
-            "pages": [
-              "api-reference/endpoint/authentication"
-            ],
-            "expanded": true
-          },
-          {
             "group": "Properties & Listings",
             "pages": [
-              "api-reference/endpoint/get",
-              "api-reference/endpoint/get-by-id",
-              "api-reference/endpoint/get-by-reference-id",
               "api-reference/endpoint/create",
               "api-reference/endpoint/update",
               "api-reference/endpoint/delete"
-            ],
-            "expanded": true
-          },
-          {
-            "group": "Helpers & Dictionaries",
-            "pages": [
-              "api-reference/endpoint/regional-units",
-              "api-reference/endpoint/municipalities"
             ],
             "expanded": true
           }
