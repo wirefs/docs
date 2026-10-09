@@ -931,8 +931,7 @@
             "schema": {
               "type": "string",
               "enum": [
-                "greece",
-                "cyprus"
+                "greece"
               ]
             }
           },
@@ -1062,8 +1061,7 @@
             "schema": {
               "type": "string",
               "enum": [
-                "greece",
-                "cyprus"
+                "greece"
               ]
             }
           },
@@ -1358,7 +1356,7 @@
     "/api/layer-properties/": {
       "get": {
         "summary": "Query layer properties",
-        "description": "Retrieves properties from a broader set of geographic/environmental layers for a given location. Cyprus-focused layers. Authentication is not enforced at the schema level but a valid Bearer token is recommended for production integrations.",
+        "description": "Retrieves properties from a broader set of geographic/environmental layers for a given location. Authentication is not enforced at the schema level but a valid Bearer token is recommended for production integrations.",
         "operationId": "getLayerProperties",
         "security": [],
         "parameters": [

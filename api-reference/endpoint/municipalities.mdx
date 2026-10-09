@@ -25,17 +25,17 @@ Use this endpoint to discover municipality IDs for filtering the [List propertie
 
 ### Filters
 
-| Parameter     | Type     | Description                                              |
-| ------------- | -------- | -------------------------------------------------------- |
-| `code`        | string   | Filter by the municipality's short code.                 |
-| `country`     | string   | Filter by country. Available values: `greece`, `cyprus`. |
-| `level`       | integer  | Filter by hierarchy level.                               |
-| `name_en`     | string   | Filter by English name.                                  |
-| `name_gr`     | string   | Filter by Greek name.                                    |
-| `parent_code` | array    | Filter by parent code. Multiple values comma-separated.  |
-| `parent_id`   | integer  | Filter by parent geographic unit ID.                     |
-| `created_at`  | datetime | Filter by creation date (ISO 8601).                      |
-| `modified_at` | datetime | Filter by last modified date (ISO 8601).                 |
+| Parameter     | Type     | Description                                             |
+| ------------- | -------- | ------------------------------------------------------- |
+| `code`        | string   | Filter by the municipality's short code.                |
+| `country`     | string   | Filter by country. Available values: `greece`.          |
+| `level`       | integer  | Filter by hierarchy level.                              |
+| `name_en`     | string   | Filter by English name.                                 |
+| `name_gr`     | string   | Filter by Greek name.                                   |
+| `parent_code` | array    | Filter by parent code. Multiple values comma-separated. |
+| `parent_id`   | integer  | Filter by parent geographic unit ID.                    |
+| `created_at`  | datetime | Filter by creation date (ISO 8601).                     |
+| `modified_at` | datetime | Filter by last modified date (ISO 8601).                |
 
 ---
 
@@ -63,6 +63,6 @@ Use this endpoint to discover municipality IDs for filtering the [List propertie
 | `parent_code` | string   | Code of the parent regional unit.                         |
 | `parent_id`   | integer  | ID of the parent regional unit.                           |
 | `level`       | integer  | Level in the geographic hierarchy (5 for municipalities). |
-| `country`     | string   | Country this unit belongs to (e.g. `greece`, `cyprus`).   |
+| `country`     | string   | Country this unit belongs to (e.g. `greece`).             |
 | `created_at`  | datetime | When this record was created.                             |
 | `modified_at` | datetime | When this record was last modified.                       |
