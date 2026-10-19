@@ -1445,7 +1445,7 @@
             "name": "build_area",
             "in": "query",
             "required": true,
-            "description": "Build area in m\u00b2. Must be greater than 0.",
+            "description": "Build area in m². Must be greater than 0.",
             "schema": {
               "type": "number",
               "exclusiveMinimum": 0
@@ -1471,8 +1471,8 @@
                 },
                 "example": {
                   "reconstruction_cost": {
-                    "as_new": 145000.0,
-                    "as_is": 112000.0
+                    "as_new": 145000,
+                    "as_is": 112000
                   }
                 }
               }
@@ -1572,7 +1572,7 @@
                     "place_type": "park",
                     "latitude": 37.9797085,
                     "longitude": 23.75967373,
-                    "distance": 0.0
+                    "distance": 0
                   },
                   {
                     "id": 65625,
@@ -1755,6 +1755,372 @@
           },
           "401": {
             "description": "Missing or invalid JWT."
+          }
+        }
+      }
+    },
+    "/cy/cadastral-search/": {
+      "get": {
+        "summary": "Find a parcel by registration block and number",
+        "operationId": "cadastralSearchByRegistration",
+        "parameters": [
+          {
+            "name": "district_code",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "District code"
+          },
+          {
+            "name": "village_code",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Village code"
+          },
+          {
+            "name": "quarter_code",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Quarter code (optional)"
+          },
+          {
+            "name": "registration_block",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Registration block identifier"
+          },
+          {
+            "name": "registration_number",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Registration number identifier"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The matched parcel",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CadastralSearchResult"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    },
+    "/cy/cadastral-search/by-parcel/": {
+      "get": {
+        "summary": "Find a parcel by sheet, plan, block, and number",
+        "operationId": "cadastralSearchByParcel",
+        "parameters": [
+          {
+            "name": "sheet",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Cadastral sheet identifier"
+          },
+          {
+            "name": "plan",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Cadastral plan identifier"
+          },
+          {
+            "name": "parcel_block",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Parcel block identifier"
+          },
+          {
+            "name": "parcel_number",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Parcel number identifier"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The matched parcel",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CadastralSearchByParcelResult"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    },
+    "/cy/cadastral-search/properties-by-parcel/": {
+      "get": {
+        "summary": "List properties on a parcel",
+        "operationId": "propertiesByParcel",
+        "parameters": [
+          {
+            "name": "district_code",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "District code"
+          },
+          {
+            "name": "village_code",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Village code"
+          },
+          {
+            "name": "quarter_code",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Quarter code (optional)"
+          },
+          {
+            "name": "sheet",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Cadastral sheet identifier"
+          },
+          {
+            "name": "plan",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Cadastral plan identifier"
+          },
+          {
+            "name": "parcel_block",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Parcel block identifier"
+          },
+          {
+            "name": "parcel_number",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Parcel number identifier"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Page number."
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Results per page."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated property results",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedPropertiesResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/cy/cadastral-search/properties-by-registration/": {
+      "get": {
+        "summary": "List properties by registration block and number",
+        "operationId": "propertiesByRegistration",
+        "parameters": [
+          {
+            "name": "district_code",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "District code"
+          },
+          {
+            "name": "village_code",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Village code"
+          },
+          {
+            "name": "quarter_code",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Quarter code (optional)"
+          },
+          {
+            "name": "registration_block",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Registration block identifier"
+          },
+          {
+            "name": "registration_number",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Registration number identifier"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Page number."
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Results per page."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated property results",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedPropertiesResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/cy/registration_blocks/": {
+      "get": {
+        "summary": "List registration blocks",
+        "operationId": "listRegistrationBlocks",
+        "parameters": [
+          {
+            "name": "district_code",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "village_code",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "quarter_code",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "registration_block",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Matching registration blocks",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RegistrationBlock"
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -2208,6 +2574,62 @@
             "description": "Distance from the queried point, in metres, rounded to 2 decimals."
           }
         }
+      },
+      "CadastralSearchResult": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "maxLength": 30
+          },
+          "geometry": {
+            "type": "string",
+            "readOnly": true,
+            "description": "WKT geometry of the parcel."
+          },
+          "coordinates": {
+            "type": "string",
+            "readOnly": true
+          },
+          "feature_id": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          }
+        },
+        "required": [
+          "coordinates",
+          "feature_id",
+          "geometry"
+        ]
+      },
+      "CadastralSearchByParcelResult": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "geometry": {
+            "type": "string",
+            "readOnly": true,
+            "description": "WKT geometry of the parcel."
+          }
+        },
+        "required": [
+          "geometry",
+          "id"
+        ]
+      },
+      "RegistrationBlock": {
+        "type": "object",
+        "properties": {
+          "registration_block": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "registration_block"
+        ]
       }
     },
     "securitySchemes": {

@@ -1,0 +1,77 @@
+---
+title: "Environmental risk — Cyprus"
+description: "Return environmental peril classifications for a location in Cyprus."
+---
+
+<Warning>
+  This endpoint's contract has not been verified against a live deployment.
+  The base URL, request/response shapes, and field names below are subject
+  to change.
+</Warning>
+
+## Overview
+
+Returns one entry per environmental peril (e.g. flood, coastal erosion) for a given coordinate, each with its classification and source provenance.
+
+Request and response shapes are identical to
+[Environmental risk — Greece](/api-reference/endpoint/environmental-risk-greece); the two are kept as separate endpoints since the underlying hazard models and data sources differ per country.
+
+---
+
+## Request
+
+### Body (application/json)
+
+| Field       | Type   | Required | Description                                                    |
+| ----------- | ------ | -------- | ----------------------------------------------------------------- |
+| `latitude`  | number | Yes      | Latitude (WGS84).                                                  |
+| `longitude` | number | Yes      | Longitude (WGS84).                                                 |
+| `perils`    | array  | No       | Perils to return, e.g. `flood`, `coastal_erosion`. Omit to return all available perils. |
+
+---
+
+## Response fields
+
+See [Environmental risk — Greece](/api-reference/endpoint/environmental-risk-greece#response-fields) for the full field reference.
+
+---
+
+## Example request
+
+```json
+{
+  "latitude": 34.6857,
+  "longitude": 33.0357,
+  "perils": ["flood", "coastal_erosion"]
+}
+```
+
+## Example response
+
+```json
+{
+  "coordinates": { "latitude": 34.6857, "longitude": 33.0357, "crs": "EPSG:4326" },
+  "risks": [
+    {
+      "peril": "flood",
+      "category": "Low",
+      "scale": "Low / Medium / High",
+      "source": {
+        "layer": "flood_hazard_cy",
+        "provider": "Water Development Department",
+        "vintage": "2020-01-01"
+      }
+    },
+    {
+      "peril": "coastal_erosion",
+      "category": "Medium",
+      "scale": "Low / Medium / High",
+      "source": {
+        "layer": "coastal_erosion_cy",
+        "provider": "Department of Lands and Surveys",
+        "vintage": "2018-06-01"
+      }
+    }
+  ]
+}
+```

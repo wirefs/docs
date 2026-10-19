@@ -1,6 +1,6 @@
 ---
-title: "Calculate reconstruction cost"
-description: "Calculate the as-new reconstruction cost of a property. Optionally returns the as-is (depreciated) value when a construction year is provided."
+title: "Calculate reconstruction cost — Cyprus"
+description: "Calculate the as-new reconstruction cost of a property in Cyprus. Optionally returns the as-is (depreciated) value when a construction year is provided."
 openapi: "GET /api/reconstruction-cost/"
 ---
 
@@ -9,6 +9,15 @@ openapi: "GET /api/reconstruction-cost/"
 Calculates the as-new reconstruction cost of a property based on its postal-code prefix, property type, and build area. When a construction year is supplied, the response also includes the as-is (depreciated) value.
 
 Only the first two digits of the postal code are used for the cost lookup.
+
+<Note>
+  This is the same underlying endpoint as
+  [Calculate reconstruction cost — Greece](/api-reference/endpoint/reconstruction-cost-greece);
+  it isn't country-specific at the API level. Whether a given Cyprus
+  postal-code prefix has a cost mapping depends on the underlying lookup
+  table, which isn't something this documentation can confirm — a `422`
+  means no mapping exists for that prefix and property type combination.
+</Note>
 
 Authentication is not enforced at the schema level, but a valid Bearer token is recommended for production integrations.
 
@@ -46,7 +55,7 @@ Authentication is not enforced at the schema level, but a valid Bearer token is 
 ## Example request
 
 ```bash
-curl -X GET "https://pandora.ask-wire.com/api/reconstruction-cost/?postal_code=1010&property_type=apartment&build_area=95&construction_year=2005" \
+curl -X GET "https://pandora.ask-wire.com/api/reconstruction-cost/?postal_code=1065&property_type=apartment&build_area=85&construction_year=2015" \
   -H "Authorization: Bearer YOUR_TOKEN"
 ```
 
@@ -55,8 +64,8 @@ curl -X GET "https://pandora.ask-wire.com/api/reconstruction-cost/?postal_code=1
 ```json
 {
   "reconstruction_cost": {
-    "as_new": 145000.0,
-    "as_is": 112000.0
+    "as_new": 131000.0,
+    "as_is": 109000.0
   }
 }
 ```

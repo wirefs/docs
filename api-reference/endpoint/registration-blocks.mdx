@@ -1,0 +1,50 @@
+---
+title: "List registration blocks"
+description: "List Cyprus registration blocks for a given area."
+openapi: "GET /cy/registration_blocks/"
+---
+
+## Overview
+
+Lists registration block identifiers, optionally filtered by district, village, quarter, or a specific registration block. Use this to discover valid `registration_block` values before calling
+[Find a parcel by registration block and number](/api-reference/endpoint/cadastral-search) or
+[List properties by registration block and number](/api-reference/endpoint/properties-by-registration).
+
+---
+
+## Query parameters
+
+| Parameter              | Type   | Required | Description             |
+| ----------------------- | ------ | -------- | -------------------------- |
+| `district_code`         | string | No       | District code.             |
+| `village_code`          | string | No       | Village code.               |
+| `quarter_code`          | string | No       | Quarter code.               |
+| `registration_block`    | string | No       | Filter by a specific block. |
+
+---
+
+## Response fields
+
+Returns an array of objects:
+
+| Field                 | Type   | Description                  |
+| ---------------------- | ------ | -------------------------------- |
+| `registration_block`   | string | Registration block identifier.  |
+
+---
+
+## Example request
+
+```bash
+curl -X GET "https://pandora.ask-wire.com/cy/registration_blocks/?district_code=04&village_code=0412" \
+  -H "Authorization: Bearer YOUR_TOKEN"
+```
+
+## Example response
+
+```json
+[
+  { "registration_block": "0/4412" },
+  { "registration_block": "0/4413" }
+]
+```

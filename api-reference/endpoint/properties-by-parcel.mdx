@@ -1,0 +1,36 @@
+---
+title: "List properties on a parcel"
+description: "List public properties located on a given Cyprus parcel."
+openapi: "GET /cy/cadastral-search/properties-by-parcel/"
+---
+
+## Overview
+
+Returns a paginated list of public properties located on a specific Cyprus parcel, identified by its administrative location codes and cadastral sheet/plan/block/number.
+
+Response fields are the same property object returned by [List properties](/api-reference/endpoint/get) — see that page for the full field reference.
+
+---
+
+## Query parameters
+
+| Parameter              | Type    | Required | Description                        |
+| ----------------------- | ------- | -------- | ------------------------------------ |
+| `district_code`         | string  | Yes      | District code.                      |
+| `village_code`          | string  | Yes      | Village code.                       |
+| `quarter_code`          | string  | No       | Quarter code.                       |
+| `sheet`                 | string  | Yes      | Cadastral sheet identifier.         |
+| `plan`                  | string  | Yes      | Cadastral plan identifier.          |
+| `parcel_block`          | string  | Yes      | Parcel block identifier.            |
+| `parcel_number`         | string  | Yes      | Parcel number identifier.           |
+| `page`                  | integer | No       | Page number within the result set.  |
+| `page_size`             | integer | No       | Results per page.                   |
+
+---
+
+## Example request
+
+```bash
+curl -X GET "https://pandora.ask-wire.com/cy/cadastral-search/properties-by-parcel/?district_code=04&village_code=0412&sheet=21&plan=54&parcel_block=B&parcel_number=1207" \
+  -H "Authorization: Bearer YOUR_TOKEN"
+```

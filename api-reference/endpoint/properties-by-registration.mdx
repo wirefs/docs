@@ -1,0 +1,36 @@
+---
+title: "List properties by registration block and number"
+description: "List public properties matching a Cyprus registration block and number."
+openapi: "GET /cy/cadastral-search/properties-by-registration/"
+---
+
+## Overview
+
+Returns a paginated list of public properties matching a Cyprus registration block and number, within a given district/village/quarter.
+
+Response fields are the same property object returned by [List properties](/api-reference/endpoint/get) — see that page for the full field reference.
+
+Use [Registration blocks](/api-reference/endpoint/registration-blocks) to discover valid `registration_block` values for a given area.
+
+---
+
+## Query parameters
+
+| Parameter              | Type    | Required | Description                        |
+| ----------------------- | ------- | -------- | ------------------------------------ |
+| `district_code`         | string  | Yes      | District code.                      |
+| `village_code`          | string  | Yes      | Village code.                       |
+| `quarter_code`          | string  | No       | Quarter code.                       |
+| `registration_block`    | string  | Yes      | Registration block identifier.      |
+| `registration_number`   | string  | Yes      | Registration number identifier.     |
+| `page`                  | integer | No       | Page number within the result set.  |
+| `page_size`             | integer | No       | Results per page.                   |
+
+---
+
+## Example request
+
+```bash
+curl -X GET "https://pandora.ask-wire.com/cy/cadastral-search/properties-by-registration/?district_code=04&village_code=0412&registration_block=0%2F4412&registration_number=17%2F2009" \
+  -H "Authorization: Bearer YOUR_TOKEN"
+```

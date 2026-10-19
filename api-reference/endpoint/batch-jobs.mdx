@@ -1,0 +1,106 @@
+---
+title: "Batch processing"
+description: "Run reconstruction-cost or environmental-risk calculations asynchronously over a portfolio of properties."
+---
+
+<Warning>
+  This endpoint's contract has not been verified against a live deployment.
+  The base URL, request/response shapes, and field names below are subject
+  to change.
+</Warning>
+
+## Overview
+
+For portfolio-scale work, submit an asynchronous job targeting one service, poll its status, then page through results once it finishes.
+
+1. Submit a job with up to 5,000 items.
+2. Poll job status until it reaches a terminal state.
+3. Page through results.
+
+---
+
+## Submit a job
+
+`POST /jobs`
+
+### Body (application/json)
+
+| Field              | Type   | Required | Description                                                                                                                       |
+| ------------------- | ------ | -------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `service`           | string | Yes      | One of `reconstruction-cost-greece`, `reconstruction-cost-cyprus`, `environmental-risk-greece`, `environmental-risk-cyprus`.        |
+| `items`             | array  | Yes      | Up to 5,000 items.                                                                                                                    |
+| `items[].ref`       | string | Yes      | Your own identifier for correlating this item with its result.                                                                       |
+| `items[].request`   | object | Yes      | The request body for the chosen `service`, matching that service's own request contract.                                             |
+
+### Response `202`
+
+| Field                | Type    | Description                                               |
+| --------------------- | ------- | ------------------------------------------------------------ |
+| `job_id`              | string  | Job identifier.                                               |
+| `service`              | string  | The service this job targets.                                 |
+| `status`              | string  | `queued` initially.                                            |
+| `created_at`          | datetime| When the job was submitted.                                    |
+| `counts`              | object  | `{ total, succeeded, failed, pending }`.                       |
+| `results_url`         | string  | URL to poll for results once the job completes.                |
+
+---
+
+## Job status
+
+`GET /jobs/{job_id}`
+
+`status` progresses through `queued` → `running` → a terminal state: `completed`, `completed_with_errors`, `failed`, or `cancelled`.
+
+---
+
+## Cancel a job
+
+`DELETE /jobs/{job_id}`
+
+Cancels a job that is still `queued` or `running`.
+
+---
+
+## Job results
+
+`GET /jobs/{job_id}/results`
+
+Cursor-paginated; available once the job reaches a terminal state.
+
+| Parameter | Type    | Required | Description                                  |
+| --------- | ------- | -------- | ----------------------------------------------- |
+| `cursor`  | string  | No       | From a previous response's `next_cursor`.       |
+| `limit`   | integer | No       | Default 100, max 1,000.                          |
+
+### Response fields
+
+| Field                   | Type   | Description                                                      |
+| ------------------------ | ------ | --------------------------------------------------------------------- |
+| `job_id`                 | string | Job identifier.                                                        |
+| `items`                  | array  | One entry per submitted item.                                          |
+| `items[].ref`            | string | The `ref` you submitted for this item.                                 |
+| `items[].status`         | string | `success` or `error`.                                                   |
+| `items[].result`         | object | Present when `status` is `success` — the matching service's own response shape. |
+| `items[].error`          | object | Present when `status` is `error`.                                      |
+| `next_cursor`            | string | Pass as `cursor` to fetch the next page. Absent on the last page.      |
+
+---
+
+## Example
+
+```json
+{
+  "service": "reconstruction-cost-cyprus",
+  "items": [
+    {
+      "ref": "portfolio-row-001",
+      "request": {
+        "latitude": 34.6857, "longitude": 33.0357,
+        "property_type": "apartment", "construction_year": 2012,
+        "build_area": { "covered": 88.0 },
+        "condition": "average", "quality_class": "C"
+      }
+    }
+  ]
+}
+```

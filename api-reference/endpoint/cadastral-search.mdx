@@ -1,0 +1,43 @@
+---
+title: "Find a parcel by registration block and number"
+description: "Resolve a Cyprus parcel using its district/village/quarter codes and registration block and number."
+openapi: "GET /cy/cadastral-search/"
+---
+
+## Overview
+
+Resolves a Cyprus cadastral parcel from its administrative location codes plus registration block and number, returning the parcel's identifier, geometry, and coordinates.
+
+Use [Registration blocks](/api-reference/endpoint/registration-blocks) to discover valid `registration_block` values for a given area.
+
+---
+
+## Query parameters
+
+| Parameter              | Type   | Required | Description                        |
+| ----------------------- | ------ | -------- | ------------------------------------ |
+| `district_code`         | string | Yes      | District code.                      |
+| `village_code`          | string | Yes      | Village code.                       |
+| `quarter_code`          | string | No       | Quarter code.                       |
+| `registration_block`    | string | Yes      | Registration block identifier.      |
+| `registration_number`   | string | Yes      | Registration number identifier.     |
+
+---
+
+## Response fields
+
+| Field         | Type           | Description                              |
+| -------------- | -------------- | ------------------------------------------ |
+| `id`           | string         | Parcel identifier (max 30 characters).    |
+| `geometry`     | string         | Parcel geometry (WKT).                    |
+| `coordinates`  | string         | Parcel coordinates.                       |
+| `feature_id`   | string \| null | Underlying GIS feature identifier.        |
+
+---
+
+## Example request
+
+```bash
+curl -X GET "https://pandora.ask-wire.com/cy/cadastral-search/?district_code=04&village_code=0412&registration_block=0%2F4412&registration_number=17%2F2009" \
+  -H "Authorization: Bearer YOUR_TOKEN"
+```

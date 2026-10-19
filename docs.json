@@ -22,15 +22,8 @@
           {
             "group": "Authentication",
             "pages": [
-              "api-reference/endpoint/authentication"
-            ],
-            "expanded": true
-          },
-          {
-            "group": "Geocoding",
-            "pages": [
-              "api-reference/endpoint/geocoding",
-              "api-reference/endpoint/kaek-search"
+              "api-reference/endpoint/authentication",
+              "api-reference/endpoint/token-authentication"
             ],
             "expanded": true
           },
@@ -43,16 +36,80 @@
             "expanded": true
           },
           {
-            "group": "Valuation",
+            "group": "Census",
             "pages": [
-              "api-reference/endpoint/reconstruction-cost"
+              "api-reference/endpoint/census2021"
             ],
             "expanded": true
           },
           {
-            "group": "Census",
+            "group": "Batch processing",
             "pages": [
-              "api-reference/endpoint/census2021"
+              "api-reference/endpoint/batch-jobs"
+            ],
+            "expanded": true
+          }
+        ]
+      },
+      {
+        "tab": "Greece",
+        "groups": [
+          {
+            "group": "Geocoding",
+            "pages": [
+              "api-reference/endpoint/geocoding-greece",
+              "api-reference/endpoint/kaek-search"
+            ],
+            "expanded": true
+          },
+          {
+            "group": "Valuation",
+            "pages": [
+              "api-reference/endpoint/reconstruction-cost-greece"
+            ],
+            "expanded": true
+          },
+          {
+            "group": "Environmental risk",
+            "pages": [
+              "api-reference/endpoint/environmental-risk-greece"
+            ],
+            "expanded": true
+          }
+        ]
+      },
+      {
+        "tab": "Cyprus",
+        "groups": [
+          {
+            "group": "Geocoding",
+            "pages": [
+              "api-reference/endpoint/geocoding-cyprus"
+            ],
+            "expanded": true
+          },
+          {
+            "group": "Valuation",
+            "pages": [
+              "api-reference/endpoint/reconstruction-cost-cyprus"
+            ],
+            "expanded": true
+          },
+          {
+            "group": "Environmental risk",
+            "pages": [
+              "api-reference/endpoint/environmental-risk-cyprus"
+            ],
+            "expanded": true
+          },
+          {
+            "group": "Cadastral & Parcel",
+            "pages": [
+              "api-reference/endpoint/cadastral-search",
+              "api-reference/endpoint/cadastral-search-by-parcel",
+              "api-reference/endpoint/properties-by-parcel",
+              "api-reference/endpoint/properties-by-registration",
+              "api-reference/endpoint/registration-blocks"
             ],
             "expanded": true
           }

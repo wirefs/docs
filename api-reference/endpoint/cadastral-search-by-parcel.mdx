@@ -1,0 +1,38 @@
+---
+title: "Find a parcel by sheet, plan, block, and number"
+description: "Resolve a Cyprus parcel using its cadastral sheet, plan, parcel block, and parcel number."
+openapi: "GET /cy/cadastral-search/by-parcel/"
+---
+
+## Overview
+
+Resolves a Cyprus cadastral parcel from its sheet/plan/block/number identifiers, returning the parcel's identifier and geometry. Use this when you have the raw cadastral-map references rather than a registration block and number.
+
+---
+
+## Query parameters
+
+| Parameter       | Type   | Description                    |
+| ---------------- | ------ | --------------------------------- |
+| `sheet`          | string | Cadastral sheet identifier.      |
+| `plan`           | string | Cadastral plan identifier.       |
+| `parcel_block`   | string | Parcel block identifier.         |
+| `parcel_number`  | string | Parcel number identifier.        |
+
+---
+
+## Response fields
+
+| Field       | Type   | Description                  |
+| ------------ | ------ | ------------------------------- |
+| `id`         | string | Parcel identifier.              |
+| `geometry`   | string | Parcel geometry (WKT).          |
+
+---
+
+## Example request
+
+```bash
+curl -X GET "https://pandora.ask-wire.com/cy/cadastral-search/by-parcel/?sheet=21&plan=54&parcel_block=B&parcel_number=1207" \
+  -H "Authorization: Bearer YOUR_TOKEN"
+```

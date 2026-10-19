@@ -1,0 +1,49 @@
+---
+title: "Geocode an address — Cyprus"
+description: "Fetch coordinates and address match information for a given Cyprus address string."
+openapi: "GET /api/geocoding/geocode/"
+---
+
+## Overview
+
+Returns geocoding information for a given address — coordinates, match type, and a normalized address string.
+
+<Note>
+  This is the same underlying endpoint as
+  [Geocode an address — Greece](/api-reference/endpoint/geocoding-greece); it
+  isn't country-specific at the API level. The `kaek` parameter is a Greek
+  cadastral concept — Cyprus properties are identified by district/village
+  codes and registration numbers instead. For that, see
+  [Find a parcel by registration block and number](/api-reference/endpoint/cadastral-search)
+  and the other cadastral endpoints.
+</Note>
+
+Authentication is not enforced at the schema level, but a valid Bearer token is recommended for production integrations.
+
+---
+
+## Query parameters
+
+| Parameter | Type   | Required | Description                             |
+| --------- | ------ | -------- | ---------------------------------------- |
+| `address` | string | Yes      | Address to geocode. Max 255 characters. |
+
+---
+
+## Response fields
+
+| Field               | Type   | Description                          |
+| ------------------- | ------ | ------------------------------------ |
+| `latitude`          | number | Latitude of the matched location.    |
+| `longitude`         | number | Longitude of the matched location.   |
+| `location_type`     | string | Type of the match (e.g. `ROOFTOP`).  |
+| `formatted_address` | string | Normalized/formatted address string. |
+
+---
+
+## Example request
+
+```bash
+curl -X GET "https://pandora.ask-wire.com/api/geocoding/geocode/?address=25%20Stasinou%20Ave%2C%20Nicosia" \
+  -H "Authorization: Bearer YOUR_TOKEN"
+```

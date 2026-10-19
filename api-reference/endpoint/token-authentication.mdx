@@ -1,0 +1,78 @@
+---
+title: "Token authentication"
+description: "Issue and refresh a bearer access token using OAuth-style grants."
+---
+
+<Warning>
+  This is a different contract from [Authentication](/api-reference/endpoint/authentication),
+  which is the confirmed, live login flow. The flow below has not been
+  verified against a live deployment — treat it as a candidate alternative,
+  not something to integrate against yet.
+</Warning>
+
+## Overview
+
+Obtain a bearer token with a username and password, then send it as `Authorization: Bearer <token>` on every subsequent request. Rotate tokens with the refresh grant rather than re-sending credentials.
+
+---
+
+## Issue a token
+
+`POST /auth/token`
+
+### Body (application/json)
+
+| Field          | Type   | Required | Description                     |
+| -------------- | ------ | -------- | ----------------------------------- |
+| `grant_type`   | string | Yes      | `password`.                          |
+| `username`     | string | Yes      | Account username.                    |
+| `password`     | string | Yes      | Account password.                    |
+
+### Response `200`
+
+| Field            | Type    | Description                             |
+| ----------------- | ------- | ------------------------------------------ |
+| `access_token`     | string  | Bearer token to use on subsequent requests. |
+| `token_type`       | string  | `Bearer`.                                    |
+| `expires_in`       | integer | Token lifetime in seconds.                   |
+| `refresh_token`    | string  | Use with the refresh grant to rotate the token. |
+| `scope`            | string  | Space-separated granted scopes.               |
+
+---
+
+## Refresh a token
+
+`POST /auth/refresh`
+
+### Body (application/json)
+
+| Field           | Type   | Required | Description             |
+| --------------- | ------ | -------- | --------------------------- |
+| `grant_type`    | string | Yes      | `refresh_token`.             |
+| `refresh_token` | string | Yes      | The refresh token to redeem. |
+
+### Response `200`
+
+Same shape as [Issue a token](#issue-a-token).
+
+---
+
+## Example
+
+```json
+{
+  "grant_type": "password",
+  "username": "client_user",
+  "password": "your_password"
+}
+```
+
+```json
+{
+  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "token_type": "Bearer",
+  "expires_in": 3600,
+  "refresh_token": "def50200c8a1...",
+  "scope": "reconstruction environmental"
+}
+```

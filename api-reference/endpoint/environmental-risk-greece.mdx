@@ -1,0 +1,85 @@
+---
+title: "Environmental risk — Greece"
+description: "Return environmental peril classifications for a location in Greece."
+---
+
+<Warning>
+  This endpoint's contract has not been verified against a live deployment.
+  The base URL, request/response shapes, and field names below are subject
+  to change.
+</Warning>
+
+## Overview
+
+Returns one entry per environmental peril (e.g. seismic, flood) for a given coordinate, each with its classification and source provenance.
+
+---
+
+## Request
+
+### Body (application/json)
+
+| Field       | Type   | Required | Description                                                    |
+| ----------- | ------ | -------- | ----------------------------------------------------------------- |
+| `latitude`  | number | Yes      | Latitude (WGS84).                                                  |
+| `longitude` | number | Yes      | Longitude (WGS84).                                                 |
+| `perils`    | array  | No       | Perils to return, e.g. `seismic`, `flood`. Omit to return all available perils. |
+
+---
+
+## Response fields
+
+| Field                    | Type   | Description                                             |
+| ------------------------- | ------ | ---------------------------------------------------------- |
+| `coordinates`              | object | `{ latitude, longitude, crs }` echoing the input location. |
+| `risks`                    | array  | One entry per peril.                                        |
+| `risks[].peril`            | string | Peril identifier, e.g. `seismic`, `flood`.                  |
+| `risks[].category`         | string | Risk classification, e.g. `Zone 2`, `Low`.                  |
+| `risks[].score`            | number | Numeric risk score, where available.                        |
+| `risks[].scale`            | string | Description of the classification scale used.               |
+| `risks[].source.layer`     | string | Source GIS layer identifier.                                 |
+| `risks[].source.provider`  | string | Data provider name.                                          |
+| `risks[].source.vintage`   | string | Date the source data was published.                          |
+
+---
+
+## Example request
+
+```json
+{
+  "latitude": 37.9838,
+  "longitude": 23.7275,
+  "perils": ["seismic", "flood"]
+}
+```
+
+## Example response
+
+```json
+{
+  "coordinates": { "latitude": 37.9838, "longitude": 23.7275, "crs": "EPSG:4326" },
+  "risks": [
+    {
+      "peril": "seismic",
+      "category": "Zone 2",
+      "score": 0.24,
+      "scale": "EAK seismic hazard zones I-III",
+      "source": {
+        "layer": "seismic_zones_gr",
+        "provider": "EPPO",
+        "vintage": "2003-01-01"
+      }
+    },
+    {
+      "peril": "flood",
+      "category": "Low",
+      "scale": "Low / Medium / High",
+      "source": {
+        "layer": "flood_hazard_gr",
+        "provider": "Ministry of Environment",
+        "vintage": "2019-12-01"
+      }
+    }
+  ]
+}
+```
