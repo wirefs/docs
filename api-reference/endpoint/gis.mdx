@@ -8,7 +8,7 @@ openapi: "GET /api/gis/"
 
 Queries the Greece parcels worker for a given GIS layer at a latitude/longitude coordinate and returns the layer-specific properties. The response shape varies by layer.
 
-Authentication is not enforced at the schema level, but a valid Bearer token is recommended for production integrations.
+Requires a valid Bearer token in the `Authorization` header. See [Authentication](/api-reference/endpoint/authentication) to get one.
 
 ---
 
@@ -30,13 +30,153 @@ Returns a JSON object with layer-specific properties. The exact shape varies dep
 | ------ | ------------------------------------------------------- |
 | `200`  | Layer-specific properties for the given location.       |
 | `400`  | Invalid or missing `latitude`, `longitude`, or `layer`. |
+| `404`  | No GIS data found for this location.                    |
 | `500`  | Error connecting to the GIS API.                        |
 
 ---
 
-## Example request
+## Crime layer fields
+
+The `crime` layer returns crime counts for the regional unit that contains the location, not for the exact point. Nearby coordinates in the same regional unit return the same figures.
+
+Each category has one field per year (for example, `OT_2025`) and a total for 2022–2025 (for example, `OT_TOTAL_2022_2025`).
+
+| Code  | Category                                                         |
+| ----- | ---------------------------------------------------------------- |
+| `GTB` | Grand theft by burglary                                          |
+| `OGT` | Other grand theft                                                |
+| `TBS` | Theft by snatching                                               |
+| `TMT` | Theft of a means of transport for use for a short period of time |
+| `OB`  | Other burglary                                                   |
+| `OT`  | Other theft                                                      |
+| `TPV` | Theft and misappropriation of petty value                        |
+| `RBS` | Robbery by snatching                                             |
+| `OR`  | Other robbery                                                    |
+
+---
+
+## Examples
+
+### Parcel layer
 
 ```bash
 curl -X GET "https://pandora.ask-wire.com/api/gis/?latitude=38.0&longitude=23.7&layer=parcel" \
   -H "Authorization: Bearer YOUR_TOKEN"
+```
+
+```json
+{
+  "OBJECTID": 816444,
+  "KAEK": "051207908001",
+  "MAIN_USE": "7200",
+  "PERCENTAGE": 100,
+  "DESCR": "Αποθηκευτικός χώρος",
+  "PROP_VERT": 0,
+  "PROP_HOR": 0,
+  "LINK": "https://www.ktimatologio.gr/ota/05120",
+  "AREA": 31710.727114628804,
+  "PERIMETER": 844.0591747300278,
+  "Shape__Are": 51190.8154296875,
+  "Shape__Len": 1072.0423830031684
+}
+```
+
+### APAA layer
+
+```bash
+curl -X GET "https://pandora.ask-wire.com/api/gis/?latitude=38.0&longitude=23.7&layer=apaa" \
+  -H "Authorization: Bearer YOUR_TOKEN"
+```
+
+```json
+{
+  "OBJECTID": 428,
+  "ZONEREGISTRYID": 4922,
+  "ZONENAME": "ΙΖ",
+  "CURRENTZONEVALUE": 1100,
+  "ZONEDESCRIPTION": "ΚΗΦΙΣΟΥ -ΑΘΗΝΩΝ - ΚΡΟΝΤΗΡΗ - Μ. ΒΟΔΑ- ΚΟΛΩΝΟΥ - ΚΡΥΣΤΑΛΛΗ - ΚΑΛΛΙΜΑΧΟΥ - Σ. ΦΡΙΖΗ - ΕΜΠΕΔΟΚΛΕΟΥΣ - ΣΟΥΡΗ - ΔΑΜΟΚΛΕΟΥΣ - ΙΑΣΙΟΥ - Π. ΜΕΛΑ- ΕΘΝ. ΜΑΚΑΡΙΟΥ - ΚΗΦΙΣΟΥ - ΠΑΠΠΟΥ -ΑΝΤΙΓΟΝΗΣ- ΜΑΡΚΟΝΙ - ΘΕΣΣΑΛΙΑΣ- ΚΗΦΙΣΟΥ",
+  "PERIFERIA": "ΑΤΤΙΚΗΣ",
+  "PERIFERIAKI_ENOTITA": "ΔΥΤΙΚΟΥ ΤΟΜΕΑ ΑΘΗΝΩΝ",
+  "DIMOS": "ΠΕΡΙΣΤΕΡΙΟΥ",
+  "DIMOTIKI_ENOTITA": "ΠΕΡΙΣΤΕΡΙΟΥ",
+  "DIMOTIKI_KOINOTITA": "ΠΕΡΙΣΤΕΡΙΟΥ",
+  "OIKISMOS": "ΠΕΡΙΣΤΕΡΙΟΥ",
+  "FEK_YEAR": "2007",
+  "URL_PINAKES": "https://www1.gsis.gr/gspp/dhpe/file_utils/fdownload?type=APAA&fname=PINAKES_2021/PINAKES_APAA_4906.pdf",
+  "SO_PINAKAS": "Α, Β, Γ, Δ Ζώνες : 0,60 Ε, ΣΤ Ζώνες : 0,65 <br>Ζ Ζώνη :0,75 Η Ζώνη : 0,70 <br>Θ Ζώνη : 0,90 Ι, ΙΒ, ΙΕ Ζώνες : 0,80 <br>Για τις υπόλοιπες Ζώνες Σ.Ο. = 1,00",
+  "LAST_FEK_YEAR": 2021,
+  "VALID_FROM": 1640995200000,
+  "MAP_NAME": "ΙΖ-1100",
+  "URL_PINAKES_2": "https://www1.gsis.gr/gspp/dhpe/file_utils/fdownload?type=APAA&fname=Pinakas_anaforas_for_maps.pdf",
+  "URL_MAP_1": "https://www1.gsis.gr/gspp/dhpe/file_utils/fdownload?type=APAA&fname=1133392_341_G0013_902cr.jpg",
+  "URL_SE": "https://www1.gsis.gr/gspp/dhpe/file_utils/fdownload?type=APAA&fname=COMMERCIAL_COEFF/COMMERCIAL_COEFF_4906.pdf",
+  "MAX_TZ": 1550,
+  "MIN_TZ": 950,
+  "AVG_TZ": 1259,
+  "ZONE_COUNT": 17,
+  "SO_JSON": "{\"TYPE\":\"FIXED\",\"VALUE\":\"1,00\"}",
+  "PARADOSIAKOS": 0
+}
+```
+
+### Crime layer
+
+```bash
+curl -X GET "https://pandora.ask-wire.com/api/gis/?latitude=38.0&longitude=23.7&layer=crime" \
+  -H "Authorization: Bearer YOUR_TOKEN"
+```
+
+```json
+{
+  "Region": "Attica",
+  "Region_Periphereia": "Attica",
+  "Regional_Unit_EL": "Κεντρικός, Βόρειος, Νότιος & Δυτικός Τομέας Αθηνών (συνδυασμός)",
+  "Regional_Unit_EN": "Central/North/South/West Athens (combined)",
+  "Mapping_Note": "combines 4 official Regional Units",
+  "GTB_2022": 77,
+  "GTB_2023": 117,
+  "GTB_2024": 107,
+  "GTB_2025": 123,
+  "GTB_TOTAL_2022_2025": 424,
+  "OGT_2022": 250,
+  "OGT_2023": 322,
+  "OGT_2024": 336,
+  "OGT_2025": 362,
+  "OGT_TOTAL_2022_2025": 1270,
+  "TBS_2022": 414,
+  "TBS_2023": 338,
+  "TBS_2024": 313,
+  "TBS_2025": 237,
+  "TBS_TOTAL_2022_2025": 1302,
+  "TMT_2022": 4,
+  "TMT_2023": 4,
+  "TMT_2024": 4,
+  "TMT_2025": 5,
+  "TMT_TOTAL_2022_2025": 17,
+  "OB_2022": 7671,
+  "OB_2023": 6935,
+  "OB_2024": 7242,
+  "OB_2025": 5160,
+  "OB_TOTAL_2022_2025": 27008,
+  "OT_2022": 46917,
+  "OT_2023": 45098,
+  "OT_2024": 41661,
+  "OT_2025": 36952,
+  "OT_TOTAL_2022_2025": 170628,
+  "TPV_2022": 10,
+  "TPV_2023": 10,
+  "TPV_2024": 11,
+  "TPV_2025": 11,
+  "TPV_TOTAL_2022_2025": 42,
+  "RBS_2022": 66,
+  "RBS_2023": 92,
+  "RBS_2024": 159,
+  "RBS_2025": 184,
+  "RBS_TOTAL_2022_2025": 501,
+  "OR_2022": 2286,
+  "OR_2023": 2264,
+  "OR_2024": 2349,
+  "OR_2025": 2362,
+  "OR_TOTAL_2022_2025": 9261
+}
 ```

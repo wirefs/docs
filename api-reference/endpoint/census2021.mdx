@@ -1,14 +1,20 @@
 ---
 title: "Query Census 2021"
-description: "Retrieve a Census 2021 record for a specific building, identified by geographical code and building block."
+description: "Retrieve aggregated Census 2021 data for a building block, identified by geographical code and building block number."
 openapi: "GET /api/census2021/{dataset}"
 ---
 
 ## Overview
 
-Returns Census 2021 data for a building identified by its geographical code and building block number. The response is a flat JSON object containing every field of the matched record — the exact shape depends on the requested dataset.
+Returns Census 2021 data for a building block, identified by its geographical code and building block number. Figures are aggregated across every building in the block. For example, `total_buildings` is the number of buildings in the block, and `construction_year_*` fields count buildings per construction period.
 
-Authentication is not enforced at the schema level, but a valid Bearer token is recommended for production integrations.
+The response is a flat JSON object containing every field of the matched record. The exact shape depends on the requested dataset.
+
+<Note>
+The query parameter is `geographical_code`, but the response field is named `geographic_code`.
+</Note>
+
+Requires a valid Bearer token in the `Authorization` header. See [Authentication](/api-reference/endpoint/authentication) to get one.
 
 ---
 
@@ -38,6 +44,99 @@ Returns a flat JSON object. Every field of the matched Census 2021 record is inc
 ## Example request
 
 ```bash
-curl -X GET "https://pandora.ask-wire.com/api/census2021/building_and_characteristics?geographical_code=0123&building_block=045" \
+curl -X GET "https://pandora.ask-wire.com/api/census2021/building_and_characteristics?geographical_code=4501000001&building_block=5167" \
   -H "Authorization: Bearer YOUR_TOKEN"
 ```
+
+## Example response
+
+```json
+{
+  "id": 153098,
+  "created_at": "2026-07-03T09:24:08.473309Z",
+  "modified_at": "2026-07-03T09:24:08.473322Z",
+  "geographic_code": "4501000001",
+  "building_block": "5167",
+  "total_buildings": 16,
+  "building_floors_0": 3,
+  "building_floors_1": 4,
+  "building_floors_2": 3,
+  "building_floors_3": 4,
+  "building_floors_4_plus": 2,
+  "ground_floor_walled": 14,
+  "ground_floor_pilotis": 2,
+  "ground_floor_basement": 0,
+  "basements_0": 14,
+  "basements_1": 2,
+  "basements_2": 0,
+  "construction_year_before_1919": 0,
+  "construction_year_1919_1945": 0,
+  "construction_year_1946_1960": 4,
+  "construction_year_1961_1970": 3,
+  "construction_year_1971_1980": 3,
+  "construction_year_1981_1985": 2,
+  "construction_year_1986_1990": 1,
+  "construction_year_1991_1995": 0,
+  "construction_year_1996_2000": 2,
+  "construction_year_2001_2005": 0,
+  "construction_year_2006_2010": 1,
+  "construction_year_2011_2015": 0,
+  "construction_year_2016_plus": 0,
+  "construction_year_under_construction": 0,
+  "adjacent_building_yes": 13,
+  "adjacent_building_no": 3,
+  "material_concrete": 16,
+  "material_metal": 0,
+  "material_wood": 0,
+  "material_cinder_block": 0,
+  "material_stone": 0,
+  "material_other": 0,
+  "roof_flat": 15,
+  "roof_slopped_tiles": 1,
+  "roof_slopped_sheets": 0,
+  "roof_slopped_other": 0,
+  "exclusive_use_total": 16,
+  "exclusive_use_residential": 16,
+  "exclusive_use_religious": 0,
+  "exclusive_use_hotel_tourism": 0,
+  "exclusive_use_factory_workshop": 0,
+  "exclusive_use_school": 0,
+  "exclusive_use_tutoring_center": 0,
+  "exclusive_use_social_welfare": 0,
+  "exclusive_use_police_fire_station": 0,
+  "exclusive_use_correctional_facility": 0,
+  "exclusive_use_public_services": 0,
+  "exclusive_use_retail_office": 0,
+  "exclusive_use_culture_conference": 0,
+  "exclusive_use_parking": 0,
+  "exclusive_use_hospital": 0,
+  "exclusive_use_other": 0,
+  "mixed_use_total": 0,
+  "mixed_use_residential": 0,
+  "mixed_use_religious": 0,
+  "mixed_use_hotel_tourism": 0,
+  "mixed_use_factory_workshop": 0,
+  "mixed_use_school": 0,
+  "mixed_use_tutoring_center": 0,
+  "mixed_use_social_welfare": 0,
+  "mixed_use_police_fire_station": 0,
+  "mixed_use_correctional_facility": 0,
+  "mixed_use_public_services": 0,
+  "mixed_use_retail_office": 0,
+  "mixed_use_culture_conference": 0,
+  "mixed_use_parking": 0,
+  "mixed_use_hospital": 0,
+  "mixed_use_other": 0,
+  "region": 13,
+  "regional_unit": 87,
+  "municipality": 112,
+  "municipal_unit": 1016
+}
+```
+
+## Error responses
+
+| Status | Description |
+| ------ | ----------- |
+| `400`  | A required query parameter is missing. |
+| `404`  | No record exists for the given dataset, geographical code and building block. |

@@ -10,7 +10,7 @@ Calculates the as-new reconstruction cost of a property based on its postal-code
 
 Only the first two digits of the postal code are used for the cost lookup.
 
-Authentication is not enforced at the schema level, but a valid Bearer token is recommended for production integrations.
+Requires a valid Bearer token in the `Authorization` header. See [Authentication](/api-reference/endpoint/authentication) to get one.
 
 ---
 
@@ -46,7 +46,7 @@ Authentication is not enforced at the schema level, but a valid Bearer token is 
 ## Example request
 
 ```bash
-curl -X GET "https://pandora.ask-wire.com/api/reconstruction-cost/?postal_code=1010&property_type=apartment&build_area=95&construction_year=2005" \
+curl -X GET "https://pandora.ask-wire.com/api/reconstruction-cost/?postal_code=10679&property_type=apartment&build_area=95&construction_year=2005" \
   -H "Authorization: Bearer YOUR_TOKEN"
 ```
 
@@ -55,8 +55,8 @@ curl -X GET "https://pandora.ask-wire.com/api/reconstruction-cost/?postal_code=1
 ```json
 {
   "reconstruction_cost": {
-    "as_new": 145000.0,
-    "as_is": 112000.0
+    "as_new": 199500.0,
+    "as_is": 139650.0
   }
 }
 ```

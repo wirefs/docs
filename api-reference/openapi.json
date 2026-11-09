@@ -931,8 +931,7 @@
             "schema": {
               "type": "string",
               "enum": [
-                "greece",
-                "cyprus"
+                "greece"
               ]
             }
           },
@@ -1062,8 +1061,7 @@
             "schema": {
               "type": "string",
               "enum": [
-                "greece",
-                "cyprus"
+                "greece"
               ]
             }
           },
@@ -1161,9 +1159,8 @@
     "/api/geocoding/geocode/": {
       "get": {
         "summary": "Geocode an address",
-        "description": "Fetches geocoding information (coordinates, address match type) for a given address. Authentication is not enforced at the schema level but a valid Bearer token is recommended for production integrations.",
+        "description": "Fetches geocoding information (coordinates, address match type) for a given address. Requires a valid Bearer token.",
         "operationId": "geocodeAddress",
-        "security": [],
         "parameters": [
           {
             "name": "address",
@@ -1194,10 +1191,21 @@
                   "$ref": "#/components/schemas/GeocodingData"
                 },
                 "example": {
-                  "latitude": 37.9838,
-                  "longitude": 23.7275,
+                  "latitude": 37.9807567,
+                  "longitude": 23.7337138,
                   "location_type": "ROOFTOP",
-                  "formatted_address": "25 Stasinou Ave, Nicosia"
+                  "formatted_address": "Panepistimiou 30, Athina 106 79, Greece",
+                  "kaek": null
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Missing or invalid Bearer token.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "detail": "Invalid authorization header"
                 }
               }
             }
@@ -1208,9 +1216,8 @@
     "/api/geocoding/kaek-search/": {
       "get": {
         "summary": "Search a parcel by KAEK code",
-        "description": "Searches for a parcel using its KAEK (cadastral) code. Authentication is not enforced at the schema level but a valid Bearer token is recommended for production integrations.",
+        "description": "Searches for a parcel using its KAEK (cadastral) code. Requires a valid Bearer token.",
         "operationId": "kaekSearch",
-        "security": [],
         "parameters": [
           {
             "name": "kaek_code",
@@ -1231,9 +1238,9 @@
                   "$ref": "#/components/schemas/KAEKSearchResponse"
                 },
                 "example": {
-                  "kaek": "123456789",
-                  "area": 250.5,
-                  "geometry": "POLYGON((23.7 37.9, ...))"
+                  "kaek": "051207908001",
+                  "area": 31710.7354171,
+                  "geometry": "{ \"type\": \"MultiPolygon\", \"coordinates\": [ [ [ [ 23.699935730532538, 38.000712031509551 ], [ 23.700656166243032, 38.000043171723306 ], [ 23.700661786089555, 38.000037955884338 ], [ 23.700654705950313, 38.00003479554308 ], [ 23.700294314878413, 37.999874067733238 ], [ 23.699780940441034, 37.999645119693518 ], [ 23.699483801120127, 37.99951248563562 ], [ 23.699405365177213, 37.999623602601233 ], [ 23.699204185252754, 37.99991431290799 ], [ 23.698862622281403, 37.999960557912026 ], [ 23.698310925683209, 38.00008475488324 ], [ 23.698116267836959, 37.999784146829469 ], [ 23.698018412272006, 37.999632496836611 ], [ 23.697893099587816, 37.999675300485571 ], [ 23.697740115476133, 37.999727662642243 ], [ 23.697701984571779, 37.999729555124141 ], [ 23.697649853412777, 37.999754611966374 ], [ 23.69755401213051, 37.999809407317116 ], [ 23.697289120882584, 37.999960979484975 ], [ 23.697682578286901, 38.000422066419439 ], [ 23.697479506510696, 38.000526339511516 ], [ 23.697499079942656, 38.000548946249182 ], [ 23.698173704809196, 38.001350377764602 ], [ 23.698174392277942, 38.001351191133494 ], [ 23.698183036178847, 38.00136146314798 ], [ 23.69849012035359, 38.001206097783935 ], [ 23.698490486148881, 38.001205915310742 ], [ 23.698491009676825, 38.001205737297688 ], [ 23.699109102457484, 38.000994540532474 ], [ 23.699935730532538, 38.000712031509551 ] ] ] ] }"
                 }
               }
             }
@@ -1244,9 +1251,8 @@
     "/api/census2021/{dataset}": {
       "get": {
         "summary": "Query Census 2021",
-        "description": "Retrieves a Census 2021 record for a specific building, identified by geographical code and building block. Authentication is not enforced at the schema level but a valid Bearer token is recommended for production integrations.",
+        "description": "Retrieves aggregated Census 2021 data for all buildings in a building block, identified by geographical code and building block. Requires a valid Bearer token.",
         "operationId": "getCensus2021",
-        "security": [],
         "parameters": [
           {
             "name": "dataset",
@@ -1258,7 +1264,8 @@
               "enum": [
                 "building_and_characteristics"
               ]
-            }
+            },
+            "example": "building_and_characteristics"
           },
           {
             "name": "geographical_code",
@@ -1267,7 +1274,8 @@
             "description": "Geographical code identifying the area (e.g. quarter/village code).",
             "schema": {
               "type": "string"
-            }
+            },
+            "example": "4501000001"
           },
           {
             "name": "building_block",
@@ -1276,7 +1284,8 @@
             "description": "Building block number within the geographical area.",
             "schema": {
               "type": "string"
-            }
+            },
+            "example": "5167"
           }
         ],
         "responses": {
@@ -1287,6 +1296,107 @@
                 "schema": {
                   "type": "object",
                   "additionalProperties": true
+                },
+                "example": {
+                  "id": 153098,
+                  "created_at": "2026-07-03T09:24:08.473309Z",
+                  "modified_at": "2026-07-03T09:24:08.473322Z",
+                  "geographic_code": "4501000001",
+                  "building_block": "5167",
+                  "total_buildings": 16,
+                  "building_floors_0": 3,
+                  "building_floors_1": 4,
+                  "building_floors_2": 3,
+                  "building_floors_3": 4,
+                  "building_floors_4_plus": 2,
+                  "ground_floor_walled": 14,
+                  "ground_floor_pilotis": 2,
+                  "ground_floor_basement": 0,
+                  "basements_0": 14,
+                  "basements_1": 2,
+                  "basements_2": 0,
+                  "construction_year_before_1919": 0,
+                  "construction_year_1919_1945": 0,
+                  "construction_year_1946_1960": 4,
+                  "construction_year_1961_1970": 3,
+                  "construction_year_1971_1980": 3,
+                  "construction_year_1981_1985": 2,
+                  "construction_year_1986_1990": 1,
+                  "construction_year_1991_1995": 0,
+                  "construction_year_1996_2000": 2,
+                  "construction_year_2001_2005": 0,
+                  "construction_year_2006_2010": 1,
+                  "construction_year_2011_2015": 0,
+                  "construction_year_2016_plus": 0,
+                  "construction_year_under_construction": 0,
+                  "adjacent_building_yes": 13,
+                  "adjacent_building_no": 3,
+                  "material_concrete": 16,
+                  "material_metal": 0,
+                  "material_wood": 0,
+                  "material_cinder_block": 0,
+                  "material_stone": 0,
+                  "material_other": 0,
+                  "roof_flat": 15,
+                  "roof_slopped_tiles": 1,
+                  "roof_slopped_sheets": 0,
+                  "roof_slopped_other": 0,
+                  "exclusive_use_total": 16,
+                  "exclusive_use_residential": 16,
+                  "exclusive_use_religious": 0,
+                  "exclusive_use_hotel_tourism": 0,
+                  "exclusive_use_factory_workshop": 0,
+                  "exclusive_use_school": 0,
+                  "exclusive_use_tutoring_center": 0,
+                  "exclusive_use_social_welfare": 0,
+                  "exclusive_use_police_fire_station": 0,
+                  "exclusive_use_correctional_facility": 0,
+                  "exclusive_use_public_services": 0,
+                  "exclusive_use_retail_office": 0,
+                  "exclusive_use_culture_conference": 0,
+                  "exclusive_use_parking": 0,
+                  "exclusive_use_hospital": 0,
+                  "exclusive_use_other": 0,
+                  "mixed_use_total": 0,
+                  "mixed_use_residential": 0,
+                  "mixed_use_religious": 0,
+                  "mixed_use_hotel_tourism": 0,
+                  "mixed_use_factory_workshop": 0,
+                  "mixed_use_school": 0,
+                  "mixed_use_tutoring_center": 0,
+                  "mixed_use_social_welfare": 0,
+                  "mixed_use_police_fire_station": 0,
+                  "mixed_use_correctional_facility": 0,
+                  "mixed_use_public_services": 0,
+                  "mixed_use_retail_office": 0,
+                  "mixed_use_culture_conference": 0,
+                  "mixed_use_parking": 0,
+                  "mixed_use_hospital": 0,
+                  "mixed_use_other": 0,
+                  "region": 13,
+                  "regional_unit": 87,
+                  "municipality": 112,
+                  "municipal_unit": 1016
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Missing or invalid Bearer token.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "detail": "Invalid authorization header"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No record found for the given dataset, geographical code and building block.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "No Census 2021 'building_and_characteristics' record found for geographical_code='0123' and building_block='045'."
                 }
               }
             }
@@ -1297,9 +1407,8 @@
     "/api/gis/": {
       "get": {
         "summary": "Query GIS layer properties",
-        "description": "Queries the Greece parcels worker for a given GIS layer at a latitude/longitude and returns the layer-specific properties. Authentication is not enforced at the schema level but a valid Bearer token is recommended for production integrations.",
+        "description": "Queries the Greece parcels worker for a given GIS layer at a latitude/longitude and returns the layer-specific properties. Requires a valid Bearer token.",
         "operationId": "getGISLayerProperties",
-        "security": [],
         "parameters": [
           {
             "name": "latitude",
@@ -1342,12 +1451,138 @@
                 "schema": {
                   "type": "object",
                   "additionalProperties": true
+                },
+                "examples": {
+                  "parcel": {
+                    "summary": "layer=parcel",
+                    "value": {
+                      "OBJECTID": 816444,
+                      "KAEK": "051207908001",
+                      "MAIN_USE": "7200",
+                      "PERCENTAGE": 100,
+                      "DESCR": "Αποθηκευτικός χώρος",
+                      "PROP_VERT": 0,
+                      "PROP_HOR": 0,
+                      "LINK": "https://www.ktimatologio.gr/ota/05120",
+                      "AREA": 31710.727114628804,
+                      "PERIMETER": 844.0591747300278,
+                      "Shape__Are": 51190.8154296875,
+                      "Shape__Len": 1072.0423830031684
+                    }
+                  },
+                  "apaa": {
+                    "summary": "layer=apaa",
+                    "value": {
+                      "OBJECTID": 428,
+                      "ZONEREGISTRYID": 4922,
+                      "ZONENAME": "ΙΖ",
+                      "CURRENTZONEVALUE": 1100,
+                      "ZONEDESCRIPTION": "ΚΗΦΙΣΟΥ -ΑΘΗΝΩΝ - ΚΡΟΝΤΗΡΗ - Μ. ΒΟΔΑ- ΚΟΛΩΝΟΥ - ΚΡΥΣΤΑΛΛΗ - ΚΑΛΛΙΜΑΧΟΥ - Σ. ΦΡΙΖΗ - ΕΜΠΕΔΟΚΛΕΟΥΣ - ΣΟΥΡΗ - ΔΑΜΟΚΛΕΟΥΣ - ΙΑΣΙΟΥ - Π. ΜΕΛΑ- ΕΘΝ. ΜΑΚΑΡΙΟΥ - ΚΗΦΙΣΟΥ - ΠΑΠΠΟΥ -ΑΝΤΙΓΟΝΗΣ- ΜΑΡΚΟΝΙ - ΘΕΣΣΑΛΙΑΣ- ΚΗΦΙΣΟΥ",
+                      "PERIFERIA": "ΑΤΤΙΚΗΣ",
+                      "PERIFERIAKI_ENOTITA": "ΔΥΤΙΚΟΥ ΤΟΜΕΑ ΑΘΗΝΩΝ",
+                      "DIMOS": "ΠΕΡΙΣΤΕΡΙΟΥ",
+                      "DIMOTIKI_ENOTITA": "ΠΕΡΙΣΤΕΡΙΟΥ",
+                      "DIMOTIKI_KOINOTITA": "ΠΕΡΙΣΤΕΡΙΟΥ",
+                      "OIKISMOS": "ΠΕΡΙΣΤΕΡΙΟΥ",
+                      "FEK_YEAR": "2007",
+                      "URL_PINAKES": "https://www1.gsis.gr/gspp/dhpe/file_utils/fdownload?type=APAA&fname=PINAKES_2021/PINAKES_APAA_4906.pdf",
+                      "SO_PINAKAS": "Α, Β, Γ, Δ Ζώνες : 0,60 Ε, ΣΤ Ζώνες : 0,65 <br>Ζ Ζώνη :0,75 Η Ζώνη : 0,70 <br>Θ Ζώνη : 0,90 Ι, ΙΒ, ΙΕ Ζώνες : 0,80 <br>Για τις υπόλοιπες Ζώνες Σ.Ο. = 1,00",
+                      "LAST_FEK_YEAR": 2021,
+                      "VALID_FROM": 1640995200000,
+                      "MAP_NAME": "ΙΖ-1100",
+                      "URL_PINAKES_2": "https://www1.gsis.gr/gspp/dhpe/file_utils/fdownload?type=APAA&fname=Pinakas_anaforas_for_maps.pdf",
+                      "URL_MAP_1": "https://www1.gsis.gr/gspp/dhpe/file_utils/fdownload?type=APAA&fname=1133392_341_G0013_902cr.jpg",
+                      "URL_SE": "https://www1.gsis.gr/gspp/dhpe/file_utils/fdownload?type=APAA&fname=COMMERCIAL_COEFF/COMMERCIAL_COEFF_4906.pdf",
+                      "MAX_TZ": 1550,
+                      "MIN_TZ": 950,
+                      "AVG_TZ": 1259,
+                      "ZONE_COUNT": 17,
+                      "SO_JSON": "{\"TYPE\":\"FIXED\",\"VALUE\":\"1,00\"}",
+                      "PARADOSIAKOS": 0
+                    }
+                  },
+                  "crime": {
+                    "summary": "layer=crime",
+                    "description": "Crime counts per regional unit, not per exact location.",
+                    "value": {
+                      "Region": "Attica",
+                      "Region_Periphereia": "Attica",
+                      "Regional_Unit_EL": "Κεντρικός, Βόρειος, Νότιος & Δυτικός Τομέας Αθηνών (συνδυασμός)",
+                      "Regional_Unit_EN": "Central/North/South/West Athens (combined)",
+                      "Mapping_Note": "combines 4 official Regional Units",
+                      "GTB_2022": 77,
+                      "GTB_2023": 117,
+                      "GTB_2024": 107,
+                      "GTB_2025": 123,
+                      "GTB_TOTAL_2022_2025": 424,
+                      "OGT_2022": 250,
+                      "OGT_2023": 322,
+                      "OGT_2024": 336,
+                      "OGT_2025": 362,
+                      "OGT_TOTAL_2022_2025": 1270,
+                      "TBS_2022": 414,
+                      "TBS_2023": 338,
+                      "TBS_2024": 313,
+                      "TBS_2025": 237,
+                      "TBS_TOTAL_2022_2025": 1302,
+                      "TMT_2022": 4,
+                      "TMT_2023": 4,
+                      "TMT_2024": 4,
+                      "TMT_2025": 5,
+                      "TMT_TOTAL_2022_2025": 17,
+                      "OB_2022": 7671,
+                      "OB_2023": 6935,
+                      "OB_2024": 7242,
+                      "OB_2025": 5160,
+                      "OB_TOTAL_2022_2025": 27008,
+                      "OT_2022": 46917,
+                      "OT_2023": 45098,
+                      "OT_2024": 41661,
+                      "OT_2025": 36952,
+                      "OT_TOTAL_2022_2025": 170628,
+                      "TPV_2022": 10,
+                      "TPV_2023": 10,
+                      "TPV_2024": 11,
+                      "TPV_2025": 11,
+                      "TPV_TOTAL_2022_2025": 42,
+                      "RBS_2022": 66,
+                      "RBS_2023": 92,
+                      "RBS_2024": 159,
+                      "RBS_2025": 184,
+                      "RBS_TOTAL_2022_2025": 501,
+                      "OR_2022": 2286,
+                      "OR_2023": 2264,
+                      "OR_2024": 2349,
+                      "OR_2025": 2362,
+                      "OR_TOTAL_2022_2025": 9261
+                    }
+                  }
                 }
               }
             }
           },
           "400": {
             "description": "Invalid or missing latitude / longitude / layer."
+          },
+          "403": {
+            "description": "Missing or invalid Bearer token.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "detail": "Invalid authorization header"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No GIS data found for this location.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "No GIS data found for this location."
+                }
+              }
+            }
           },
           "500": {
             "description": "Error connecting to the GIS API."
@@ -1358,9 +1593,8 @@
     "/api/layer-properties/": {
       "get": {
         "summary": "Query layer properties",
-        "description": "Retrieves properties from a broader set of geographic/environmental layers for a given location. Cyprus-focused layers. Authentication is not enforced at the schema level but a valid Bearer token is recommended for production integrations.",
+        "description": "Retrieves properties from a broader set of geographic/environmental layers for a given location. Requires a valid Bearer token.",
         "operationId": "getLayerProperties",
-        "security": [],
         "parameters": [
           {
             "name": "latitude",
@@ -1406,6 +1640,65 @@
                 "schema": {
                   "type": "object",
                   "additionalProperties": true
+                },
+                "examples": {
+                  "building_blocks": {
+                    "summary": "layer=building_blocks",
+                    "value": {
+                      "valid": "23/11/1948",
+                      "study": "Περί αναθεωρήσεως του Σχεδίου Αθηνών επί των έναντι τεσσαράκοντα δύο (42) τοπογραφικών φύλλων",
+                      "pe_code": "II",
+                      "ot_number": "67079",
+                      "landuse": "Green areas & / or sports facilities",
+                      "fek_file": "http://epoleodomia.terra.gr/FEK/060249FT000313XXA-1948.pdf",
+                      "code_eslta": 450100,
+                      "build_coef": "4.8",
+                      "ot_code": 50300,
+                      "dec_no": "13035",
+                      "dec_type": "Royal Decree",
+                      "fek": "313/Α/1948-12-13"
+                    }
+                  },
+                  "country": {
+                    "summary": "layer=country",
+                    "value": {
+                      "country": "Greece"
+                    }
+                  },
+                  "floods": {
+                    "summary": "layer=floods",
+                    "value": {
+                      "risk_indicator": false
+                    }
+                  },
+                  "parcels": {
+                    "summary": "layer=parcels",
+                    "value": {
+                      "kaek": "051207908001"
+                    }
+                  },
+                  "seismic_zones": {
+                    "summary": "layer=seismic_zones",
+                    "value": {
+                      "zone_name": "I"
+                    }
+                  },
+                  "wildfire": {
+                    "summary": "layer=wildfire",
+                    "value": {
+                      "risk": "High"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Missing or invalid Bearer token.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "detail": "Invalid authorization header"
                 }
               }
             }
@@ -1418,7 +1711,6 @@
         "summary": "Calculate reconstruction cost",
         "description": "Calculates the as-new reconstruction cost of a property from its postal-code prefix, property type, and build area. If a construction year is supplied, the as-is (depreciated) value is also returned.",
         "operationId": "getReconstructionCost",
-        "security": [],
         "parameters": [
           {
             "name": "postal_code",
@@ -1473,8 +1765,8 @@
                 },
                 "example": {
                   "reconstruction_cost": {
-                    "as_new": 145000.0,
-                    "as_is": 112000.0
+                    "as_new": 199500.0,
+                    "as_is": 139650.0
                   }
                 }
               }
@@ -1482,6 +1774,16 @@
           },
           "400": {
             "description": "Invalid input parameters."
+          },
+          "403": {
+            "description": "Missing or invalid Bearer token.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "detail": "Invalid authorization header"
+                }
+              }
+            }
           },
           "422": {
             "description": "No reconstruction cost mapping exists for the given postal-code prefix and property type."
@@ -2208,6 +2510,72 @@
               "null"
             ],
             "description": "Distance from the queried point, in metres, rounded to 2 decimals."
+          }
+        }
+      },
+      "GeocodingData": {
+        "type": "object",
+        "properties": {
+          "latitude": {
+            "type": "number",
+            "description": "Latitude of the matched location."
+          },
+          "longitude": {
+            "type": "number",
+            "description": "Longitude of the matched location."
+          },
+          "location_type": {
+            "type": "string",
+            "description": "Type of the match (e.g. `ROOFTOP`)."
+          },
+          "formatted_address": {
+            "type": "string",
+            "description": "Normalized/formatted address string."
+          },
+          "kaek": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "KAEK (parcel) code. Only populated when `kaek=true` and a parcel matches. Otherwise `null`."
+          }
+        }
+      },
+      "KAEKSearchResponse": {
+        "type": "object",
+        "properties": {
+          "kaek": {
+            "type": "string",
+            "description": "The KAEK code."
+          },
+          "area": {
+            "type": "number",
+            "description": "Parcel area."
+          },
+          "geometry": {
+            "type": "string",
+            "description": "Parcel geometry as a GeoJSON string."
+          }
+        }
+      },
+      "ReconstructionCostResponse": {
+        "type": "object",
+        "properties": {
+          "reconstruction_cost": {
+            "type": "object",
+            "properties": {
+              "as_new": {
+                "type": "number",
+                "description": "As-new reconstruction cost. Always returned."
+              },
+              "as_is": {
+                "type": "number",
+                "description": "As-is (depreciated) value. Only present when `construction_year` was supplied."
+              }
+            },
+            "required": [
+              "as_new"
+            ]
           }
         }
       }

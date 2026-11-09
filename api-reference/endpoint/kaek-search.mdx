@@ -8,7 +8,7 @@ openapi: "GET /api/geocoding/kaek-search/"
 
 Returns parcel information for a given KAEK (cadastral) code, including the parcel area and geometry.
 
-Authentication is not enforced at the schema level, but a valid Bearer token is recommended for production integrations.
+Requires a valid Bearer token in the `Authorization` header. See [Authentication](/api-reference/endpoint/authentication) to get one.
 
 ---
 
@@ -26,13 +26,23 @@ Authentication is not enforced at the schema level, but a valid Bearer token is 
 | ---------- | ------ | ------------------------------------------ |
 | `kaek`     | string | The KAEK code.                             |
 | `area`     | number | Parcel area.                               |
-| `geometry` | string | Parcel geometry (e.g. WKT/GeoJSON string). |
+| `geometry` | string | Parcel geometry as a GeoJSON string.        |
 
 ---
 
 ## Example request
 
 ```bash
-curl -X GET "https://pandora.ask-wire.com/api/geocoding/kaek-search/?kaek_code=123456789" \
+curl -X GET "https://pandora.ask-wire.com/api/geocoding/kaek-search/?kaek_code=051207908001" \
   -H "Authorization: Bearer YOUR_TOKEN"
+```
+
+## Example response
+
+```json
+{
+  "kaek": "051207908001",
+  "area": 31710.7354171,
+  "geometry": "{ \"type\": \"MultiPolygon\", \"coordinates\": [ [ [ [ 23.699935730532538, 38.000712031509551 ], [ 23.700656166243032, 38.000043171723306 ], [ 23.700661786089555, 38.000037955884338 ], [ 23.700654705950313, 38.00003479554308 ], [ 23.700294314878413, 37.999874067733238 ], [ 23.699780940441034, 37.999645119693518 ], [ 23.699483801120127, 37.99951248563562 ], [ 23.699405365177213, 37.999623602601233 ], [ 23.699204185252754, 37.99991431290799 ], [ 23.698862622281403, 37.999960557912026 ], [ 23.698310925683209, 38.00008475488324 ], [ 23.698116267836959, 37.999784146829469 ], [ 23.698018412272006, 37.999632496836611 ], [ 23.697893099587816, 37.999675300485571 ], [ 23.697740115476133, 37.999727662642243 ], [ 23.697701984571779, 37.999729555124141 ], [ 23.697649853412777, 37.999754611966374 ], [ 23.69755401213051, 37.999809407317116 ], [ 23.697289120882584, 37.999960979484975 ], [ 23.697682578286901, 38.000422066419439 ], [ 23.697479506510696, 38.000526339511516 ], [ 23.697499079942656, 38.000548946249182 ], [ 23.698173704809196, 38.001350377764602 ], [ 23.698174392277942, 38.001351191133494 ], [ 23.698183036178847, 38.00136146314798 ], [ 23.69849012035359, 38.001206097783935 ], [ 23.698490486148881, 38.001205915310742 ], [ 23.698491009676825, 38.001205737297688 ], [ 23.699109102457484, 38.000994540532474 ], [ 23.699935730532538, 38.000712031509551 ] ] ] ] }"
+}
 ```

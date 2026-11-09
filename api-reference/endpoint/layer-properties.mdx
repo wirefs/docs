@@ -6,9 +6,9 @@ openapi: "GET /api/layer-properties/"
 
 ## Overview
 
-Returns properties from a broader set of geographic and environmental layers for a given coordinate. Primarily covers Cyprus-focused layers including floods, seismic zones, and wildfire risk.
+Returns properties from a broader set of geographic and environmental layers for a given coordinate, including town-planning building blocks, floods, seismic zones, and wildfire risk.
 
-Authentication is not enforced at the schema level, but a valid Bearer token is recommended for production integrations.
+Requires a valid Bearer token in the `Authorization` header. See [Authentication](/api-reference/endpoint/authentication) to get one.
 
 ---
 
@@ -24,13 +24,99 @@ Authentication is not enforced at the schema level, but a valid Bearer token is 
 
 ## Response
 
-Returns layer data for the given location. Contact the Ask Wire team to confirm the expected payload shape for each layer before integrating.
+Returns a JSON object with layer-specific data for the given location. The shape varies by layer. See the examples below for each layer.
+
+If the layer has no data at the location, the response is an empty object (`{}`).
 
 ---
 
-## Example request
+## Examples
+
+### Building blocks layer
 
 ```bash
-curl -X GET "https://pandora.ask-wire.com/api/layer-properties/?latitude=35.17&longitude=33.36&layer=floods" \
+curl -X GET "https://pandora.ask-wire.com/api/layer-properties/?latitude=37.9807567&longitude=23.7337138&layer=building_blocks" \
   -H "Authorization: Bearer YOUR_TOKEN"
+```
+
+```json
+{
+  "valid": "23/11/1948",
+  "study": "Περί αναθεωρήσεως του Σχεδίου Αθηνών επί των έναντι τεσσαράκοντα δύο (42) τοπογραφικών φύλλων",
+  "pe_code": "II",
+  "ot_number": "67079",
+  "landuse": "Green areas & / or sports facilities",
+  "fek_file": "http://epoleodomia.terra.gr/FEK/060249FT000313XXA-1948.pdf",
+  "code_eslta": 450100,
+  "build_coef": "4.8",
+  "ot_code": 50300,
+  "dec_no": "13035",
+  "dec_type": "Royal Decree",
+  "fek": "313/Α/1948-12-13"
+}
+```
+
+### Country layer
+
+```bash
+curl -X GET "https://pandora.ask-wire.com/api/layer-properties/?latitude=37.9807567&longitude=23.7337138&layer=country" \
+  -H "Authorization: Bearer YOUR_TOKEN"
+```
+
+```json
+{
+  "country": "Greece"
+}
+```
+
+### Floods layer
+
+```bash
+curl -X GET "https://pandora.ask-wire.com/api/layer-properties/?latitude=37.9807567&longitude=23.7337138&layer=floods" \
+  -H "Authorization: Bearer YOUR_TOKEN"
+```
+
+```json
+{
+  "risk_indicator": false
+}
+```
+
+### Parcels layer
+
+```bash
+curl -X GET "https://pandora.ask-wire.com/api/layer-properties/?latitude=38.0&longitude=23.7&layer=parcels" \
+  -H "Authorization: Bearer YOUR_TOKEN"
+```
+
+```json
+{
+  "kaek": "051207908001"
+}
+```
+
+### Seismic zones layer
+
+```bash
+curl -X GET "https://pandora.ask-wire.com/api/layer-properties/?latitude=37.9807567&longitude=23.7337138&layer=seismic_zones" \
+  -H "Authorization: Bearer YOUR_TOKEN"
+```
+
+```json
+{
+  "zone_name": "I"
+}
+```
+
+### Wildfire layer
+
+```bash
+curl -X GET "https://pandora.ask-wire.com/api/layer-properties/?latitude=37.9807567&longitude=23.7337138&layer=wildfire" \
+  -H "Authorization: Bearer YOUR_TOKEN"
+```
+
+```json
+{
+  "risk": "High"
+}
 ```
