@@ -1,12 +1,12 @@
 ---
 title: "Query Census 2021"
-description: "Retrieve aggregated Census 2021 data for a building block, identified by geographical code and building block number."
+description: "Retrieve aggregated Census 2021 data for a building block, looked up by geographical code and building block, by coordinates, or by KAEK."
 openapi: "GET /api/census2021/{dataset}"
 ---
 
 ## Overview
 
-Returns Census 2021 data for a building block, identified by its geographical code and building block number. Figures are aggregated across every building in the block. For example, `total_buildings` is the number of buildings in the block, and `construction_year_*` fields count buildings per construction period.
+Returns Census 2021 data for a building block. Figures are aggregated across every building in the block. For example, `total_buildings` is the number of buildings in the block, and `construction_year_*` fields count buildings per construction period.
 
 The response is a flat JSON object containing every field of the matched record. The exact shape depends on the requested dataset.
 
@@ -26,12 +26,31 @@ Requires a valid Bearer token in the `Authorization` header. See [Authentication
 
 ---
 
+## Lookup methods
+
+Find the building block with exactly one of these lookup methods:
+
+| Method                      | Parameters                               | Returns                                       |
+| --------------------------- | ---------------------------------------- | --------------------------------------------- |
+| Geographical code and block | `geographical_code` and `building_block` | The building block with that code and number. |
+| Coordinates                 | `lat` and `lon`                          | The building block that contains the point.   |
+| KAEK                        | `kaek`                                   | The building block that contains the parcel.  |
+
+Sending no lookup method, more than one, or only half of a pair (for example, `lat` without `lon`) returns a `400`.
+
+---
+
 ## Query parameters
 
-| Parameter           | Type   | Required | Description                                                         |
-| ------------------- | ------ | -------- | ------------------------------------------------------------------- |
-| `geographical_code` | string | Yes      | Geographical code identifying the area (e.g. quarter/village code). |
-| `building_block`    | string | Yes      | Building block number within the geographical area.                 |
+All query parameters are optional on their own. Each request must include the parameters for exactly one lookup method.
+
+| Parameter           | Type   | Lookup method               | Description                                                         |
+| ------------------- | ------ | --------------------------- | ------------------------------------------------------------------- |
+| `geographical_code` | string | Geographical code and block | Geographical code identifying the area (e.g. quarter/village code). |
+| `building_block`    | string | Geographical code and block | Building block number within the geographical area.                 |
+| `lat`               | number | Coordinates                 | Latitude of the location. Use `lat`, not `latitude`.                |
+| `lon`               | number | Coordinates                 | Longitude of the location. Use `lon`, not `longitude`.              |
+| `kaek`              | string | KAEK                        | KAEK (cadastral) code of a parcel.                                  |
 
 ---
 
@@ -41,14 +60,30 @@ Returns a flat JSON object. Every field of the matched Census 2021 record is inc
 
 ---
 
-## Example request
+## Example requests
 
-```bash
+<CodeGroup>
+
+```bash Geographical code and block
 curl -X GET "https://pandora.ask-wire.com/api/census2021/building_and_characteristics?geographical_code=4501000001&building_block=5167" \
   -H "Authorization: Bearer YOUR_TOKEN"
 ```
 
+```bash Coordinates
+curl -X GET "https://pandora.ask-wire.com/api/census2021/building_and_characteristics?lat=38.007391&lon=23.751585" \
+  -H "Authorization: Bearer YOUR_TOKEN"
+```
+
+```bash KAEK
+curl -X GET "https://pandora.ask-wire.com/api/census2021/building_and_characteristics?kaek=050092535003" \
+  -H "Authorization: Bearer YOUR_TOKEN"
+```
+
+</CodeGroup>
+
 ## Example response
+
+All three example requests point to the same building block, so they return the same response.
 
 ```json
 {
@@ -138,5 +173,16 @@ curl -X GET "https://pandora.ask-wire.com/api/census2021/building_and_characteri
 
 | Status | Description |
 | ------ | ----------- |
-| `400`  | A required query parameter is missing. |
-| `404`  | No record exists for the given dataset, geographical code and building block. |
+| `400`  | No lookup method, more than one lookup method, an incomplete pair, or an invalid value (for example, a non-numeric `lat`). |
+| `403`  | Missing or invalid Bearer token. |
+| `404`  | No record found: no building block matches the code and number, no census block exists at the coordinates, or the KAEK does not exist. |
+
+Example `400` response:
+
+```json
+{
+  "non_field_errors": [
+    "Provide exactly one lookup method: geographical_code + building_block, lat + lon, or kaek."
+  ]
+}
+```

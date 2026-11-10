@@ -1251,7 +1251,7 @@
     "/api/census2021/{dataset}": {
       "get": {
         "summary": "Query Census 2021",
-        "description": "Retrieves aggregated Census 2021 data for all buildings in a building block, identified by geographical code and building block. Requires a valid Bearer token.",
+        "description": "Retrieves aggregated Census 2021 data for all buildings in a building block. Look up the block with exactly one method: `geographical_code` + `building_block`, `lat` + `lon`, or `kaek`. Requires a valid Bearer token.",
         "operationId": "getCensus2021",
         "parameters": [
           {
@@ -1270,8 +1270,8 @@
           {
             "name": "geographical_code",
             "in": "query",
-            "required": true,
-            "description": "Geographical code identifying the area (e.g. quarter/village code).",
+            "required": false,
+            "description": "Geographical code identifying the area (e.g. quarter/village code). Use together with `building_block`.",
             "schema": {
               "type": "string"
             },
@@ -1280,12 +1280,42 @@
           {
             "name": "building_block",
             "in": "query",
-            "required": true,
-            "description": "Building block number within the geographical area.",
+            "required": false,
+            "description": "Building block number within the geographical area. Use together with `geographical_code`.",
             "schema": {
               "type": "string"
             },
             "example": "5167"
+          },
+          {
+            "name": "lat",
+            "in": "query",
+            "required": false,
+            "description": "Latitude of the location. Use together with `lon`.",
+            "schema": {
+              "type": "number"
+            },
+            "example": 38.007391
+          },
+          {
+            "name": "lon",
+            "in": "query",
+            "required": false,
+            "description": "Longitude of the location. Use together with `lat`.",
+            "schema": {
+              "type": "number"
+            },
+            "example": 23.751585
+          },
+          {
+            "name": "kaek",
+            "in": "query",
+            "required": false,
+            "description": "KAEK (cadastral) code of a parcel. Use on its own.",
+            "schema": {
+              "type": "string"
+            },
+            "example": "050092535003"
           }
         ],
         "responses": {
@@ -1381,6 +1411,18 @@
               }
             }
           },
+          "400": {
+            "description": "No lookup method, more than one lookup method, an incomplete pair, or an invalid value.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "non_field_errors": [
+                    "Provide exactly one lookup method: geographical_code + building_block, lat + lon, or kaek."
+                  ]
+                }
+              }
+            }
+          },
           "403": {
             "description": "Missing or invalid Bearer token.",
             "content": {
@@ -1392,11 +1434,28 @@
             }
           },
           "404": {
-            "description": "No record found for the given dataset, geographical code and building block.",
+            "description": "No matching record.",
             "content": {
               "application/json": {
-                "example": {
-                  "error": "No Census 2021 'building_and_characteristics' record found for geographical_code='0123' and building_block='045'."
+                "examples": {
+                  "code_and_block": {
+                    "summary": "No record for the code and block",
+                    "value": {
+                      "error": "No Census 2021 'building_and_characteristics' record found for geographical_code='0123' and building_block='045'."
+                    }
+                  },
+                  "coordinates": {
+                    "summary": "No census block at the coordinates",
+                    "value": {
+                      "error": "No census block found at this location"
+                    }
+                  },
+                  "kaek": {
+                    "summary": "KAEK not found",
+                    "value": {
+                      "error": "KAEK not found"
+                    }
+                  }
                 }
               }
             }
